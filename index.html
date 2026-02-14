@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Southern New England Weather | Smart Local Forecasts</title>
+    <meta
+      name="description"
+      content="A modern Southern New England weather dashboard with model-based forecasts, trend visualizations, and practical local planning insights."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero__badge">Forecast Intelligence for CT · RI · Southeastern MA</div>
+      <h1>Southern New England Weather</h1>
+      <p class="hero__subtitle">
+        A clean, trustworthy, and engaging weather dashboard for your daily planning, coastal activity, and severe-weather awareness.
+      </p>
+      <div class="hero__chips">
+        <span class="chip">Model options: Best Match, GFS, ICON, ECMWF</span>
+        <span class="chip">Daily + hourly trends</span>
+        <span class="chip">Built for fast decisions</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="controls card" aria-label="Forecast controls">
+        <div class="control-group">
+          <label for="location">Choose a city</label>
+          <select id="location"></select>
+        </div>
+        <div class="control-group">
+          <label for="model">Forecast model</label>
+          <select id="model"></select>
+        </div>
+        <div class="control-group">
+          <label for="timeRange">Hourly trend window</label>
+          <select id="timeRange">
+            <option value="24">Next 24 hours</option>
+            <option value="48">Next 48 hours</option>
+          </select>
+        </div>
+        <button id="refreshBtn" class="button">Refresh forecast</button>
+      </section>
+
+      <section class="status card" id="status" role="status" aria-live="polite">
+        Loading latest forecast...
+      </section>
+
+      <section class="kpis" aria-label="Top weather metrics">
+        <article class="kpi card">
+          <div class="kpi__label">Current conditions</div>
+          <div class="kpi__value" id="currentCondition">--</div>
+          <p class="kpi__sub" id="currentTemp">--</p>
+        </article>
+        <article class="kpi card">
+          <div class="kpi__label">Feels like</div>
+          <div class="kpi__value" id="feelsLike">--</div>
+          <p class="kpi__sub" id="windNow">--</p>
+        </article>
+        <article class="kpi card">
+          <div class="kpi__label">Today's high / low</div>
+          <div class="kpi__value" id="todayRange">--</div>
+          <p class="kpi__sub" id="rainToday">--</p>
+        </article>
+      </section>
+
+      <section class="viz card" aria-label="Temperature trend">
+        <div class="card-heading">
+          <h2>Hourly Temperature Trend</h2>
+          <p id="trendSummary">--</p>
+        </div>
+        <svg id="tempTrend" viewBox="0 0 800 240" role="img" aria-label="Hourly temperature trend chart"></svg>
+      </section>
+
+      <section class="viz card" aria-label="Precipitation probability trend">
+        <div class="card-heading">
+          <h2>Precipitation Probability</h2>
+          <p id="precipSummary">--</p>
+        </div>
+        <svg id="precipTrend" viewBox="0 0 800 220" role="img" aria-label="Hourly precipitation chart"></svg>
+      </section>
+
+      <section class="insights card" aria-label="Forecast insight cards">
+        <h2>Planner Insights</h2>
+        <div id="insightGrid" class="insight-grid"></div>
+      </section>
+
+      <section class="daily card" aria-label="7-day forecast">
+        <h2>7-Day Outlook</h2>
+        <div id="dailyGrid" class="daily-grid"></div>
+      </section>
+
+      <section class="about card" aria-label="Data source and trust notes">
+        <h2>Why you can trust this dashboard</h2>
+        <ul>
+          <li>Forecast data is pulled from <strong>Open-Meteo</strong>, which provides access to established model outputs.</li>
+          <li>You can switch models to compare scenarios rather than relying on a single source.</li>
+          <li>Each refresh displays live values, local time context, and practical planning signals.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Southern New England Weather MVP — built as a launch-ready starter with product, traffic, and monetization strategy.
+      </p>
+    </footer>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
