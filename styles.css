@@ -48,12 +48,9 @@
   
   .hero-photo {
     margin-top: 0.9rem;
-    min-height: 160px;
-    display: grid;
-    place-items: center;
-    background:
-      linear-gradient(rgba(7, 11, 21, 0.62), rgba(7, 11, 21, 0.85)),
-      url('https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&w=1400&q=60') center/cover;
+    min-height: 280px;
+    background: url("assets/sne_weather.jpg") center/contain no-repeat;
+    background-color: #070a13;
   }
   .hero-photo.small { margin-top: 1rem; min-height: 130px; }
   .hero-photo__overlay { text-align: center; }
