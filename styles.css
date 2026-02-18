@@ -118,7 +118,7 @@ a:focus-visible {
   width: 100%;
   background:
     linear-gradient(180deg, rgba(8, 8, 8, 0.2), rgba(8, 8, 8, 0.45)),
-    url('assets/SNEZweather.jpg?v=20260218c') center/cover no-repeat;
+    url('assets/SNEZweather.jpg?v=20260218d') center/cover no-repeat;
 }
 
 .sidebar nav {
