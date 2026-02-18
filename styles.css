@@ -34,6 +34,7 @@
   --chart-now-line: rgba(237, 197, 138, 0.82);
 
   --max-width: 1520px;
+  --flow-panel-max: 560px;
 }
 
 
@@ -101,6 +102,7 @@ a:focus-visible {
 }
 
 .sidebar {
+  position: relative;
   padding: 0;
   min-height: 0;
   display: flex;
@@ -112,7 +114,7 @@ a:focus-visible {
 }
 
 .top-banner {
-  height: clamp(170px, 22vw, 260px);
+  height: clamp(188px, 24vw, 280px);
   width: 100%;
   background:
     linear-gradient(180deg, rgba(8, 8, 8, 0.2), rgba(8, 8, 8, 0.45)),
@@ -121,12 +123,26 @@ a:focus-visible {
 
 .sidebar nav {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.58rem;
-  padding: 0.68rem min(2vw, 1rem) 0;
+  position: absolute;
+  left: 50%;
+  bottom: 0.62rem;
+  transform: translateX(-50%);
+  z-index: 3;
+  width: calc(100% - 1.2rem);
+  overflow-x: auto;
+  padding: 0.1rem;
+  scrollbar-width: none;
+}
+
+.sidebar nav::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-link {
+  flex: 0 0 auto;
+  white-space: nowrap;
   text-decoration: none;
   color: var(--color-text-primary);
   padding: 0.6rem 0.78rem;
@@ -151,7 +167,8 @@ a:focus-visible {
 
 .quick-tools {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, var(--flow-panel-max)) auto;
+  justify-content: center;
   gap: 0.7rem;
   align-items: center;
   margin-bottom: 0.55rem;
@@ -197,7 +214,7 @@ a:focus-visible {
 }
 
 .search-wrap {
-  width: min(560px, 100%);
+  width: 100%;
   position: relative;
 }
 
@@ -298,7 +315,7 @@ select,
   border: 1px solid color-mix(in oklab, var(--color-accent-primary), transparent 56%);
   background: rgba(10, 8, 6, 0.54);
   backdrop-filter: blur(2px);
-  width: min(560px, 100%);
+  width: min(var(--flow-panel-max), 100%);
 }
 
 .hero-source-picker label {
@@ -953,18 +970,22 @@ select,
   }
 
   .top-banner {
-    height: clamp(132px, 42vw, 190px);
+    height: clamp(142px, 44vw, 196px);
     background-position: center;
   }
 
   .sidebar nav {
-    gap: 0.42rem;
-    padding: 0.54rem 0.72rem 0;
+    gap: 0.38rem;
+    width: calc(100% - 0.7rem);
+    bottom: 0.36rem;
+    padding: 0.08rem;
   }
 
   .nav-link {
-    text-align: left;
-    padding: 0.54rem 0.64rem;
+    text-align: center;
+    padding: 0.5rem 0.58rem;
+    font-size: 0.9rem;
+    min-height: 40px;
   }
 
   .quick-tools {
