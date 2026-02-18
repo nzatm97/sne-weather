@@ -14,7 +14,7 @@
   <body>
     <div class="site-layout">
       <aside class="sidebar card">
-        <h2>Southern New England Weather</h2>
+        <img src="assets/SNEZweather.jpg" alt="SNEZ Weather logo" class="header-logo" />
         <nav>
           <a class="nav-link active" href="index.html">Home</a>
           <a class="nav-link" href="about.html">About Us</a>
@@ -34,8 +34,18 @@
 
         <section class="hero-photo card">
           <div class="hero-strip__content">
-            <p class="hero-strip__kicker">Southern New England Weather</p>
-            <h1>Regional Radar and Alert Desk</h1>
+            <h1>Choose Your Forecast.</h1>
+            <p class="hero-strip__subhead">Compare NOAA, GFS, and Euro — then scroll for the details.</p>
+            <p class="hero-scroll-cue" aria-hidden="true">Scroll ↓</p>
+          </div>
+          <div class="hero-source-picker">
+            <label for="forecastSource">Forecast Source</label>
+            <select id="forecastSource" aria-label="Forecast Source">
+              <option value="noaa">NOAA / NWS</option>
+              <option value="gfs">GFS</option>
+              <option value="ecmwf">ECMWF</option>
+            </select>
+            <p id="forecastSourceStatus" class="muted">Using NOAA / NWS</p>
           </div>
         </section>
 
@@ -105,18 +115,6 @@
           </section>
 
           <aside class="side-panel">
-            <section class="card">
-              <div class="section-head">
-                <h3>Forecast Source</h3>
-                <select id="forecastSource" aria-label="Forecast Source">
-                  <option value="noaa">NOAA / NWS</option>
-                  <option value="gfs">GFS</option>
-                  <option value="ecmwf">ECMWF</option>
-                </select>
-              </div>
-              <p id="forecastSourceStatus" class="muted">Using NOAA / NWS</p>
-            </section>
-
             <section class="card">
               <div class="section-head">
                 <h3>NWS Alerts</h3>
