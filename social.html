@@ -28,17 +28,22 @@
             <a id="xProfileButton" class="btn btn-secondary" href="https://x.com/zaleweather" target="_blank" rel="noopener noreferrer">
               View @zaleweather on X
             </a>
-            <a
-              id="xTimelineLink"
-              class="twitter-timeline"
-              data-theme="dark"
-              data-height="680"
-              data-chrome="noheader nofooter"
-              data-dnt="true"
-              href="https://twitter.com/zaleweather?ref_src=twsrc%5Etfw"
-            >
-              Posts by @zaleweather
-            </a>
+            <div class="x-timeline-wrap" id="xTimelineWrap">
+              <a
+                id="xTimelineLink"
+                class="twitter-timeline x-timeline-seed"
+                data-theme="dark"
+                data-height="700"
+                data-chrome="noheader nofooter"
+                data-dnt="true"
+                href="https://twitter.com/zaleweather?ref_src=twsrc%5Etfw"
+              >
+                Timeline feed
+              </a>
+            </div>
+            <p id="xEmbedError" class="muted x-embed-error" hidden>
+              Timeline could not be loaded in this browser. Use the button above to view posts on X.
+            </p>
           </div>
           <p class="muted">If the timeline is empty, the account may be private or have no recent public posts.</p>
         </section>
@@ -63,6 +68,16 @@
         timelineLink.href = timelineUrl;
         timelineLink.textContent = `Posts by @${X_HANDLE}`;
       }
+
+      const embedError = document.getElementById('xEmbedError');
+      const timelineWrap = document.getElementById('xTimelineWrap');
+
+      window.setTimeout(() => {
+        const loaded = timelineWrap?.querySelector('iframe.twitter-timeline');
+        if (!loaded && embedError) {
+          embedError.hidden = false;
+        }
+      }, 3500);
     </script>
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
   </body>
