@@ -1,11 +1,12 @@
-export async function getEcmwfForecast() {
-  return {
+import { CONFIG } from '../../config.js';
+import { getOpenMeteoModelForecast } from './openMeteoModelProvider.js';
+
+export async function getEcmwfForecast(location) {
+  return getOpenMeteoModelForecast({
+    endpoint: CONFIG.endpoints.ecmwfForecast,
+    cacheNamespace: 'forecast-source-ecmwf',
     sourceId: 'ecmwf',
     sourceLabel: 'ECMWF',
-    comingSoon: true,
-    message: 'ECMWF integration is coming soon.',
-    daily: [],
-    hourly: []
-  };
+    location
+  });
 }
-

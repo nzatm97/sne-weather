@@ -2,13 +2,23 @@
 
 ## Current implementation
 
-### Default forecast source (5-day + hourly)
+### Forecast source selector (5-day + hourly)
 - Provider: `NOAA / NWS`
 - Discovery endpoint: `https://api.weather.gov/points/{lat},{lon}`
 - Forecast endpoints discovered from `points` response:
   - `properties.forecast` (daily periods)
   - `properties.forecastHourly` (hourly periods)
   - `properties.forecastGridData` (gridded fields used when available)
+
+### Additional forecast sources (live)
+- Provider: `GFS` (via Open-Meteo model endpoint)
+  - Endpoint: `https://api.open-meteo.com/v1/gfs`
+- Provider: `ECMWF` (via Open-Meteo model endpoint)
+  - Endpoint: `https://api.open-meteo.com/v1/ecmwf`
+- Request settings:
+  - `timezone=America/New_York`
+  - `timeformat=unixtime`
+  - Fahrenheit, mph, inch units
 
 ### Additional weather feed still used in app
 - Provider: Open-Meteo (current conditions + meteogram chart)
@@ -45,11 +55,10 @@
 
 ## Source selector status
 - `NOAA / NWS`: fully implemented
-- `GFS`: placeholder (“Coming soon”)
-- `ECMWF`: placeholder (“Coming soon”)
+- `GFS`: fully implemented via Open-Meteo
+- `ECMWF`: fully implemented via Open-Meteo
 
 ## Licensing / attribution notes
 - NOAA / NWS API: public US government weather data from [weather.gov](https://www.weather.gov/documentation/services-web-api)
 - Open-Meteo API: see [Open-Meteo docs](https://open-meteo.com/en/docs)
 - Keep map and weather data attributions visible where required by upstream providers.
-

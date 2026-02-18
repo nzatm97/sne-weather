@@ -18,6 +18,8 @@ export const CONFIG = {
       geocode: 'https://nominatim.openstreetmap.org/search',
       reverseGeocode: 'https://nominatim.openstreetmap.org/reverse',
       forecast: 'https://api.open-meteo.com/v1/forecast',
+      gfsForecast: 'https://api.open-meteo.com/v1/gfs',
+      ecmwfForecast: 'https://api.open-meteo.com/v1/ecmwf',
       radarMeta: 'https://api.rainviewer.com/public/weather-maps.json',
       nwsPoint: 'https://api.weather.gov/points',
       nwsAlertsActive: 'https://api.weather.gov/alerts/active'
