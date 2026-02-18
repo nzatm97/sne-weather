@@ -35,6 +35,7 @@ if (!elements.status) {
 const weatherMap = new WeatherMap('map');
 let activeLocation = { ...CONFIG.defaultLocation };
 let latestForecast = null;
+let radarFrameSet = [];
 
 function setStatus(message, isError = false) {
   elements.status.textContent = message;
@@ -145,15 +146,15 @@ async function updateLocation(place) {
 
 async function initRadar() {
   try {
-    const frames = await radarFrames();
-    weatherMap.setRadarFrames(frames);
-    elements.radarFrameRange.max = String(frames.length - 1);
-    elements.radarFrameRange.value = String(frames.length - 1);
-    elements.radarTimestamp.textContent = new Date(frames.at(-1).time * 1000).toLocaleTimeString();
+    radarFrameSet = await radarFrames();
+    weatherMap.setRadarFrames(radarFrameSet);
+    elements.radarFrameRange.max = String(radarFrameSet.length - 1);
+    elements.radarFrameRange.value = String(radarFrameSet.length - 1);
+    elements.radarTimestamp.textContent = new Date(radarFrameSet.at(-1).time * 1000).toLocaleTimeString();
 
     elements.radarFrameRange.addEventListener('input', (event) => {
       const idx = weatherMap.setFrameByIndex(Number(event.target.value));
-      elements.radarTimestamp.textContent = new Date(frames[idx].time * 1000).toLocaleTimeString();
+      elements.radarTimestamp.textContent = new Date(radarFrameSet[idx].time * 1000).toLocaleTimeString();
     });
   } catch (error) {
     setStatus(`Radar unavailable: ${error.message}`, true);
@@ -171,6 +172,7 @@ function setupControls() {
     }
     weatherMap.playRadar((idx) => {
       elements.radarFrameRange.value = String(idx);
+      if (radarFrameSet[idx]) elements.radarTimestamp.textContent = new Date(radarFrameSet[idx].time * 1000).toLocaleTimeString();
     });
     elements.radarPlayBtn.textContent = 'Pause';
     playing = true;

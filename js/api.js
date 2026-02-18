@@ -66,7 +66,10 @@ export async function radarFrames() {
   if (cached) return cached;
 
   const data = await fetchJson(CONFIG.endpoints.radarMeta);
-  const frames = (data.radar?.past ?? []).slice(-CONFIG.map.maxRadarFrames);
+  const past = data.radar?.past ?? [];
+  const nowcast = data.radar?.nowcast ?? [];
+  const deduped = [...past, ...nowcast].filter((frame, idx, all) => all.findIndex((f) => f.path === frame.path) === idx);
+  const frames = deduped.slice(-CONFIG.map.maxRadarFrames);
   if (!frames.length) throw new Error('No radar frames available.');
   setCached('radar', 'frames', frames);
   return frames;

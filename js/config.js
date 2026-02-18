@@ -2,7 +2,7 @@ export const CONFIG = {
     defaultLocation: { name: 'Providence, RI', lat: 41.824, lon: -71.4128 },
     map: {
       initialZoom: 7,
-      maxRadarFrames: 8,
+      maxRadarFrames: 12,
       radarOpacity: 0.72,
       darkTiles: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
       attribution:
