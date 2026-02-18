@@ -87,7 +87,7 @@ a:focus-visible {
 
 .site-layout {
   display: grid;
-  grid-template-columns: 230px 1fr;
+  grid-template-columns: 1fr;
   width: min(var(--max-width), 96vw);
   margin: 0.9rem auto 1.35rem;
   gap: 1rem;
@@ -101,33 +101,41 @@ a:focus-visible {
 }
 
 .sidebar {
-  position: sticky;
-  top: 1rem;
-  height: fit-content;
-  padding: 0.95rem;
+  position: relative;
+  padding: 1.05rem 1.15rem 1.1rem;
+  min-height: 178px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background:
+    linear-gradient(98deg, rgba(10, 7, 4, 0.82) 14%, rgba(10, 7, 4, 0.56) 42%, rgba(10, 7, 4, 0.72) 100%),
+    url('assets/SNEZweather.jpg') right center/cover no-repeat;
+  overflow: hidden;
 }
 
 .sidebar h2 {
-  font-size: 1rem;
-  color: var(--color-accent-primary);
-  margin-bottom: 1rem;
+  font-size: clamp(1.25rem, 2.1vw, 1.85rem);
+  color: color-mix(in oklab, var(--color-accent-primary), white 14%);
+  margin-bottom: 0.82rem;
   line-height: 1.35;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
 }
 
 .sidebar nav {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.58rem;
 }
 
 .nav-link {
   text-decoration: none;
   color: var(--color-text-primary);
-  padding: 0.58rem 0.6rem;
+  padding: 0.6rem 0.78rem;
   border-radius: 10px;
   border: 1px solid transparent;
-  background: color-mix(in oklab, var(--color-surface), black 5%);
+  background: rgba(8, 8, 8, 0.56);
   font-weight: 600;
+  backdrop-filter: blur(2px);
 }
 
 .nav-link:hover,
@@ -242,25 +250,6 @@ select,
   background:
     linear-gradient(180deg, rgba(4, 8, 18, 0.2), rgba(4, 8, 18, 0.62)),
     url('assets/sne_weather.jpg') center 46%/cover no-repeat;
-}
-
-.hero-brand {
-  position: absolute;
-  top: 0.7rem;
-  left: 0.8rem;
-  padding: 0.34rem;
-  border-radius: 12px;
-  background: color-mix(in oklab, var(--color-bg-0), transparent 24%);
-  border: 1px solid color-mix(in oklab, var(--color-accent-primary), transparent 42%);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(2px);
-}
-
-.hero-brand__logo {
-  display: block;
-  width: clamp(110px, 12vw, 160px);
-  height: auto;
-  border-radius: 8px;
 }
 
 .hero-strip__content {
@@ -885,13 +874,8 @@ select,
   }
 
   .sidebar {
-    position: static;
-  }
-
-  .sidebar nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0.45rem;
+    min-height: 164px;
+    padding: 0.9rem 0.9rem 0.95rem;
   }
 
   .grid-layout {
@@ -907,17 +891,18 @@ select,
   }
 
   .sidebar {
-    padding: 0.75rem;
+    min-height: 152px;
+    padding: 0.76rem 0.72rem 0.82rem;
+    background-position: 62% center;
   }
 
   .sidebar nav {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.42rem;
   }
 
   .nav-link {
-    text-align: center;
-    padding: 0.62rem 0.52rem;
+    text-align: left;
+    padding: 0.54rem 0.64rem;
   }
 
   .quick-tools {
@@ -928,16 +913,6 @@ select,
   .hero-photo {
     min-height: 136px;
     padding: 0.68rem 0.72rem;
-  }
-
-  .hero-brand {
-    top: 0.55rem;
-    left: 0.58rem;
-    padding: 0.25rem;
-  }
-
-  .hero-brand__logo {
-    width: clamp(92px, 34vw, 128px);
   }
 
   .controls-grid {
