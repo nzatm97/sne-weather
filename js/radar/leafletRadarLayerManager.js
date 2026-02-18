@@ -43,6 +43,7 @@ export class LeafletRadarLayerManager {
       opacity: 0,
       zIndex: 450,
       attribution: 'RainViewer',
+      maxNativeZoom: 7,
       updateWhenIdle: false,
       keepBuffer: 4
     });

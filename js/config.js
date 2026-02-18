@@ -7,6 +7,9 @@ export const CONFIG = {
       radarFps: 1.6,
       radarPrefetchAhead: 3,
       radarCacheSize: 12,
+      radarMaxNativeZoom: 7,
+      radarColor: 2,
+      radarOptions: '1_1',
       darkTiles: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
       attribution:
         '&copy; OpenStreetMap contributors &copy; CARTO &copy; RainViewer'

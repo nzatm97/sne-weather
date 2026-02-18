@@ -167,7 +167,7 @@ async function updateLocation(place) {
 
 async function initRadar() {
   try {
-    radarFrameSet = await fetchRadarFrames();
+    radarFrameSet = await fetchRadarFrames({ force: true });
     elements.radarFrameRange.max = String(radarFrameSet.length - 1);
     elements.radarFrameRange.value = String(radarFrameSet.length - 1);
     updateRadarTimestamp(radarFrameSet.length - 1);

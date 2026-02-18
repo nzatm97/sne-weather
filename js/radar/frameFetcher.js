@@ -17,7 +17,7 @@ function normalizeRainViewerFrames(data) {
   return deduped.slice(-CONFIG.map.maxRadarFrames).map((frame) => ({
     time: frame.time,
     provider: 'RainViewer',
-    tileUrl: `https://tilecache.rainviewer.com${frame.path}/256/{z}/{x}/{y}/6/1_1.png`
+    tileUrl: `https://tilecache.rainviewer.com${frame.path}/256/{z}/{x}/{y}/${CONFIG.map.radarColor}/${CONFIG.map.radarOptions}.png`
   }));
 }
 
