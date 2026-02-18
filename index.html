@@ -118,11 +118,16 @@
 
           <aside class="side-panel">
             <section class="card">
-              <div class="section-head">
-                <h3>NWS Alerts</h3>
-                <label><input id="alertsToggle" type="checkbox" checked /> Show polygons</label>
-              </div>
-              <ul id="alertsList" class="alerts-list"></ul>
+              <details class="alerts-details" open>
+                <summary>
+                  <span>NWS Alerts</span>
+                  <small>Tap to expand</small>
+                </summary>
+                <div class="alerts-tools">
+                  <label><input id="alertsToggle" type="checkbox" checked /> Show polygons</label>
+                </div>
+                <ul id="alertsList" class="alerts-list"></ul>
+              </details>
             </section>
 
             <section class="card">

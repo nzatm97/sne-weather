@@ -279,6 +279,16 @@ function renderForecastPanels() {
 }
 
 function renderAlerts(alerts) {
+  const escapeHtml = (value = '') =>
+    String(value)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+
+  const formatMultiline = (value = '') => escapeHtml(value).replaceAll('\n', '<br />');
+
   elements.alertsList.innerHTML = '';
   if (!alerts.length) {
     elements.alertsList.innerHTML = '<li class="muted">No active NWS alerts for this forecast zone.</li>';
@@ -287,16 +297,43 @@ function renderAlerts(alerts) {
 
   alerts.forEach((alert) => {
     const p = alert.properties;
+    const eventName = p.event || 'Weather Alert';
+    const severity = p.severity || 'Unknown severity';
+    const urgency = p.urgency || 'Unknown urgency';
+    const effective = p.effective ? new Date(p.effective).toLocaleString() : 'Unknown start';
+    const expires = p.expires ? new Date(p.expires).toLocaleString() : 'Unknown end';
+
+    const detailBlocks = [];
+    if (p.headline) detailBlocks.push(`<p class="alert-body__headline">${escapeHtml(p.headline)}</p>`);
+    if (p.description) detailBlocks.push(`<p>${formatMultiline(p.description)}</p>`);
+    if (p.instruction) detailBlocks.push(`<p><strong>Instructions:</strong><br />${formatMultiline(p.instruction)}</p>`);
+    if (p.areaDesc) detailBlocks.push(`<p><strong>Areas:</strong> ${escapeHtml(p.areaDesc)}</p>`);
+
     const li = document.createElement('li');
     li.className = 'alert-item';
     li.innerHTML = `
-      <button>
-        <strong>${p.event}</strong>
-        <span>${p.severity || 'Unknown severity'} · ${p.urgency || 'Unknown urgency'}</span>
-        <small>${new Date(p.effective).toLocaleString()} - ${new Date(p.expires).toLocaleString()}</small>
-      </button>
+      <details>
+        <summary>
+          <strong>${escapeHtml(eventName)}</strong>
+          <span class="alert-meta">${escapeHtml(severity)} · ${escapeHtml(urgency)}</span>
+          <small>${escapeHtml(effective)} - ${escapeHtml(expires)}</small>
+        </summary>
+        <div class="alert-body">
+          ${detailBlocks.join('') || '<p>No additional alert text provided by source.</p>'}
+          ${alert.geometry ? '<button class="btn btn-ghost alert-zoom-btn" type="button">Zoom To Alert Area</button>' : ''}
+        </div>
+      </details>
     `;
-    li.querySelector('button').addEventListener('click', () => weatherMap.zoomToAlert(alert));
+
+    const zoomBtn = li.querySelector('.alert-zoom-btn');
+    if (zoomBtn) {
+      zoomBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        weatherMap.zoomToAlert(alert);
+      });
+    }
+
     elements.alertsList.append(li);
   });
 }

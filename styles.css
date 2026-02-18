@@ -544,21 +544,108 @@ select,
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: 220px;
+  max-height: 320px;
   overflow: auto;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.alert-item button {
-  width: 100%;
-  text-align: left;
+.alerts-details > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-heading);
+  font-size: 1.03rem;
+  font-weight: 700;
+}
+
+.alerts-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.alerts-details > summary::after {
+  content: '▾';
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  transition: transform 160ms ease;
+}
+
+.alerts-details[open] > summary::after {
+  transform: rotate(180deg);
+}
+
+.alerts-details > summary small {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.alerts-tools {
+  margin: 0.45rem 0 0.6rem;
+}
+
+.alerts-tools label {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.alert-item {
   border: 1px solid var(--color-border-strong);
   border-radius: 10px;
   background: color-mix(in oklab, var(--color-surface), black 8%);
-  color: var(--color-text-primary);
+}
+
+.alert-item details {
   padding: 0.55rem;
+}
+
+.alert-item summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.alert-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.alert-item summary strong {
+  display: block;
+}
+
+.alert-meta {
+  margin-top: 0.18rem;
+}
+
+.alert-body {
+  margin-top: 0.52rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 0.48rem;
+}
+
+.alert-body p {
+  margin: 0 0 0.45rem;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.38;
+}
+
+.alert-body p:last-child {
+  margin-bottom: 0;
+}
+
+.alert-body__headline {
+  color: var(--color-text-primary) !important;
+  font-weight: 600;
+}
+
+.alert-zoom-btn {
+  margin-top: 0.45rem;
+  min-height: 36px;
 }
 
 .alert-item span,
