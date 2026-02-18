@@ -107,6 +107,18 @@
           <aside class="side-panel">
             <section class="card">
               <div class="section-head">
+                <h3>Forecast Source</h3>
+                <select id="forecastSource" aria-label="Forecast Source">
+                  <option value="noaa">NOAA / NWS</option>
+                  <option value="gfs">GFS</option>
+                  <option value="ecmwf">ECMWF</option>
+                </select>
+              </div>
+              <p id="forecastSourceStatus" class="muted">Using NOAA / NWS</p>
+            </section>
+
+            <section class="card">
+              <div class="section-head">
                 <h3>NWS Alerts</h3>
                 <label><input id="alertsToggle" type="checkbox" checked /> Show polygons</label>
               </div>

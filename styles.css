@@ -445,6 +445,15 @@ select,
   margin-bottom: 0.6rem;
 }
 
+.section-head select {
+  min-height: 40px;
+}
+
+#forecastSourceStatus {
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+}
+
 .meteogram-wrap {
   height: 280px;
 }
@@ -481,6 +490,75 @@ select,
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.5rem;
+}
+
+.daily-accordion details {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--color-surface), black 8%);
+}
+
+.daily-accordion summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.68rem 0.7rem;
+  min-height: 52px;
+}
+
+.daily-accordion summary::-webkit-details-marker {
+  display: none;
+}
+
+.daily-accordion summary::after {
+  content: 'Details ▾';
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+.daily-accordion details[open] summary::after {
+  content: 'Details ▴';
+}
+
+.daily-summary-main {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.daily-summary-temp {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.daily-details-wrap {
+  border-top: 1px solid var(--color-border);
+  padding: 0.55rem 0.6rem 0.65rem;
+  display: grid;
+  gap: 0.38rem;
+}
+
+.daily-detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.55rem;
+  align-items: flex-start;
+}
+
+.daily-detail-row span {
+  color: var(--color-text-muted);
+}
+
+.daily-detail-row strong {
+  text-align: right;
 }
 
 .mini-card {
@@ -527,6 +605,7 @@ select,
   font-weight: 600;
   list-style: none;
   user-select: none;
+  min-height: 44px;
 }
 
 .hourly-details > summary::-webkit-details-marker {
@@ -549,6 +628,11 @@ select,
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-text-muted);
+}
+
+.hourly-details > summary > span {
+  flex: 1;
+  min-width: 0;
 }
 
 .hourly-details[open] > summary {
@@ -852,6 +936,66 @@ select,
 
   .side-panel .card {
     padding: 0.78rem;
+  }
+
+  .section-head {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.45rem;
+  }
+
+  .section-head h3 {
+    font-size: 1rem;
+  }
+
+  .section-head select {
+    width: 100%;
+  }
+
+  #forecastSourceStatus {
+    margin-top: 0.35rem;
+  }
+
+  .hourly-details > summary {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    row-gap: 0.18rem;
+    column-gap: 0.55rem;
+    align-items: start;
+  }
+
+  .hourly-details > summary small {
+    grid-column: 1 / 2;
+    font-size: 0.68rem;
+  }
+
+  .daily-accordion summary {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    row-gap: 0.36rem;
+  }
+
+  .daily-accordion summary::after {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .daily-summary-main {
+    min-width: 0;
+    flex: 1 1 180px;
+  }
+
+  .daily-summary-temp {
+    font-size: 0.95rem;
+  }
+
+  .daily-details-wrap {
+    gap: 0.44rem;
+  }
+
+  .daily-detail-row {
+    font-size: 0.9rem;
   }
 
   .meteogram-wrap {

@@ -6,6 +6,10 @@ import { loadRecentSearches, saveRecentSearch, setupSearch } from './search.js';
 import { fetchRadarFrames, formatRadarTimestamp } from './radar/frameFetcher.js';
 import { LeafletRadarLayerManager } from './radar/leafletRadarLayerManager.js';
 import { RadarController } from './radar/radarController.js';
+import { getForecastSource, getForecastSourceOptions } from './forecast/providerRegistry.js';
+import { formatEtHourLabel, formatEtWeekday, formatWeekdayFromDateKey, getEtDateKey, getEtHourKey, getMsUntilNextEtMidnight } from './time/easternTime.js';
+
+const FORECAST_SOURCE_STORAGE_KEY = 'sne-forecast-source';
 
 const elements = {
   status: document.getElementById('status'),
@@ -33,18 +37,27 @@ const elements = {
   radarTimestamp: document.getElementById('radarTimestamp'),
   radarLoadState: document.getElementById('radarLoadState'),
   meteogramRange: document.getElementById('meteogramRange'),
-  layerRadar: document.getElementById('layerRadar')
+  layerRadar: document.getElementById('layerRadar'),
+  forecastSource: document.getElementById('forecastSource'),
+  forecastSourceStatus: document.getElementById('forecastSourceStatus')
 };
 
 if (!elements.status) throw new Error('Home page elements are missing.');
 
 const weatherMap = new WeatherMap('map');
 let activeLocation = { ...CONFIG.defaultLocation };
-let latestForecast = null;
+let latestMeteogramForecast = null;
+let latestSourceForecast = null;
+let selectedForecastSource = localStorage.getItem(FORECAST_SOURCE_STORAGE_KEY) || 'noaa';
+
 let radarFrameSet = [];
 let radarManager;
 let radarController;
 let radarRefreshTimer = null;
+let etDateWatcher = null;
+let etMidnightTimeout = null;
+let lastEtDateKey = getEtDateKey();
+let lastEtHourKey = getEtHourKey();
 
 function setStatus(message, isError = false) {
   elements.status.textContent = message;
@@ -73,12 +86,13 @@ function weatherLabel(code) {
 }
 
 function weatherIcon(label) {
-  const l = label.toLowerCase();
+  const l = String(label || '').toLowerCase();
   if (l.includes('thunder')) return '⛈️';
   if (l.includes('snow')) return '❄️';
-  if (l.includes('rain') || l.includes('drizzle')) return '🌧️';
-  if (l.includes('cloud')) return '☁️';
-  if (l.includes('fog')) return '🌫️';
+  if (l.includes('rain') || l.includes('drizzle') || l.includes('shower')) return '🌧️';
+  if (l.includes('cloud') || l.includes('overcast')) return '☁️';
+  if (l.includes('fog') || l.includes('haze')) return '🌫️';
+  if (l.includes('wind')) return '💨';
   return '☀️';
 }
 
@@ -92,44 +106,120 @@ function renderCurrent(data) {
   if (elements.currentIconLarge) elements.currentIconLarge.textContent = weatherIcon(summary);
 }
 
-function renderHourly(data) {
-  if (!elements.hourlyGrid) return;
-  elements.hourlyGrid.innerHTML = '';
+function etFilterDaily(daily) {
+  const todayKey = getEtDateKey();
+  return daily.filter((day) => day.dateKey >= todayKey).slice(0, 5);
+}
 
-  data.hourly.time.slice(0, 18).forEach((time, idx) => {
-    const code = data.hourly.weather_code?.[idx];
-    const label = weatherLabel(code);
-    const rainChance = Math.round(data.hourly.precipitation_probability?.[idx] ?? 0);
+function etFilterHourly(hourly) {
+  const nowHourKey = getEtHourKey();
+  return hourly.filter((hour) => getEtHourKey(hour.timestamp) >= nowHourKey).slice(0, 18);
+}
+
+function normalizeSourceStatus(model) {
+  if (!elements.forecastSourceStatus) return;
+  if (model.comingSoon) {
+    elements.forecastSourceStatus.textContent = model.message || `${model.sourceLabel} is coming soon.`;
+    elements.forecastSourceStatus.classList.remove('error');
+    return;
+  }
+
+  elements.forecastSourceStatus.textContent = `Using ${model.sourceLabel}`;
+  elements.forecastSourceStatus.classList.remove('error');
+}
+
+function renderHourlyFromSource(model) {
+  elements.hourlyGrid.innerHTML = '';
+  if (model.comingSoon) {
+    elements.hourlyGrid.innerHTML = `<p class="muted">${model.message}</p>`;
+    return;
+  }
+
+  const visibleHourly = etFilterHourly(model.hourly || []);
+  if (!visibleHourly.length) {
+    elements.hourlyGrid.innerHTML = '<p class="muted">No hourly data available yet for the current ET hour window.</p>';
+    return;
+  }
+
+  visibleHourly.forEach((hour) => {
+    const rainChance = hour.precipChance === null || hour.precipChance === undefined ? '--' : `${Math.round(hour.precipChance)}%`;
+    const windPart = hour.windSpeedMph ? `${Math.round(hour.windSpeedMph)} mph ${hour.windDirection || ''}`.trim() : null;
+
     const card = document.createElement('article');
     card.className = 'mini-card mini-card--hourly';
     card.innerHTML = `
-      <div class="weather-icon" aria-hidden="true">${weatherIcon(label)}</div>
+      <div class="weather-icon" aria-hidden="true">${weatherIcon(hour.shortText)}</div>
       <div>
-        <div class="mini-card__title">${new Date(time).toLocaleTimeString([], { hour: 'numeric' })}</div>
-        <div class="mini-card__value">${Math.round(data.hourly.temperature_2m[idx])}°F</div>
-        <div class="mini-card__meta">${label} · Rain ${rainChance}%</div>
+        <div class="mini-card__title">${formatEtHourLabel(hour.timestamp)} ET</div>
+        <div class="mini-card__value">${hour.temp === null || hour.temp === undefined ? '--' : `${Math.round(hour.temp)}°F`}</div>
+        <div class="mini-card__meta">${hour.shortText} · Rain ${rainChance}${windPart ? ` · Wind ${windPart}` : ''}</div>
       </div>
     `;
     elements.hourlyGrid.append(card);
   });
+
+  const nowKey = getEtHourKey();
+  const firstKey = visibleHourly[0] ? getEtHourKey(visibleHourly[0].timestamp) : null;
+  if (firstKey && firstKey < nowKey) {
+    console.warn('[forecast-check] Hourly forecast alignment issue', { nowKey, firstKey });
+  }
 }
 
-function renderDaily(data) {
+function renderDailyFromSource(model) {
   elements.dailyGrid.innerHTML = '';
-  data.daily.time.slice(0, 5).forEach((date, idx) => {
-    const label = weatherLabel(data.daily.weather_code[idx]);
+  if (model.comingSoon) {
+    elements.dailyGrid.innerHTML = `<p class="muted">${model.message}</p>`;
+    return;
+  }
+
+  const visibleDaily = etFilterDaily(model.daily || []);
+  if (!visibleDaily.length) {
+    elements.dailyGrid.innerHTML = '<p class="muted">No daily data available for upcoming ET days.</p>';
+    return;
+  }
+
+  visibleDaily.forEach((day) => {
+    const details = day.details?.filter((item) => item?.value !== null && item?.value !== undefined && item?.value !== '') || [];
+    const detailRows = details.map((item) => `<div class="daily-detail-row"><span>${item.label}</span><strong>${item.value}</strong></div>`).join('');
+    const dayName = day.timestamp ? formatEtWeekday(day.timestamp) : formatWeekdayFromDateKey(day.dateKey);
+    const highDisplay = day.high === null || day.high === undefined ? '--' : `${Math.round(day.high)}°`;
+    const lowDisplay = day.low === null || day.low === undefined ? '--' : `${Math.round(day.low)}°`;
+
     const card = document.createElement('article');
-    card.className = 'mini-card';
+    card.className = 'daily-accordion';
     card.innerHTML = `
-      <div class="weather-icon" aria-hidden="true">${weatherIcon(label)}</div>
-      <div>
-        <div class="mini-card__title">${new Date(date).toLocaleDateString([], { weekday: 'short' })}</div>
-        <div class="mini-card__value">${Math.round(data.daily.temperature_2m_max[idx])}° / ${Math.round(data.daily.temperature_2m_min[idx])}°</div>
-        <div class="mini-card__meta">${label} · Rain ${Math.round(data.daily.precipitation_probability_max[idx])}%</div>
-      </div>
+      <details>
+        <summary>
+          <div class="daily-summary-main">
+            <div class="weather-icon" aria-hidden="true">${weatherIcon(day.shortText)}</div>
+            <div>
+              <div class="mini-card__title">${dayName}</div>
+              <div class="mini-card__meta">${day.shortText}</div>
+            </div>
+          </div>
+          <div class="daily-summary-temp">${highDisplay} / ${lowDisplay}</div>
+        </summary>
+        <div class="daily-details-wrap">
+          ${detailRows || '<p class="muted">Additional fields unavailable for this day.</p>'}
+        </div>
+      </details>
     `;
+
     elements.dailyGrid.append(card);
   });
+
+  const todayKey = getEtDateKey();
+  const firstKey = visibleDaily[0]?.dateKey;
+  if (firstKey && firstKey < todayKey) {
+    console.warn('[forecast-check] Daily forecast alignment issue', { todayKey, firstKey });
+  }
+}
+
+function renderForecastPanels() {
+  if (!latestSourceForecast) return;
+  normalizeSourceStatus(latestSourceForecast);
+  renderHourlyFromSource(latestSourceForecast);
+  renderDailyFromSource(latestSourceForecast);
 }
 
 function renderAlerts(alerts) {
@@ -167,6 +257,58 @@ function renderRecents() {
   });
 }
 
+async function loadSourceForecast(place, sourceId, { showLoading = false } = {}) {
+  const source = getForecastSource(sourceId);
+  if (showLoading) {
+    elements.forecastSourceStatus.textContent = `Loading ${source.label}...`;
+  }
+
+  const model = await source.load(place);
+  latestSourceForecast = model;
+  selectedForecastSource = source.id;
+  localStorage.setItem(FORECAST_SOURCE_STORAGE_KEY, source.id);
+  if (elements.forecastSource) elements.forecastSource.value = source.id;
+  renderForecastPanels();
+}
+
+async function refreshForecastForEtBoundary() {
+  if (!latestSourceForecast) return;
+  const currentDateKey = getEtDateKey();
+  const currentHourKey = getEtHourKey();
+
+  if (currentDateKey !== lastEtDateKey) {
+    lastEtDateKey = currentDateKey;
+    lastEtHourKey = currentHourKey;
+    try {
+      await loadSourceForecast(activeLocation, selectedForecastSource, { showLoading: false });
+      setStatus(`Forecast auto-refreshed for new ET day (${currentDateKey}).`);
+    } catch (error) {
+      setStatus(`Forecast refresh failed after ET midnight: ${error.message}`, true);
+    }
+    return;
+  }
+
+  if (currentHourKey !== lastEtHourKey) {
+    lastEtHourKey = currentHourKey;
+    renderForecastPanels();
+  }
+}
+
+function startEtBoundaryWatch() {
+  if (etDateWatcher) clearInterval(etDateWatcher);
+  if (etMidnightTimeout) clearTimeout(etMidnightTimeout);
+
+  etDateWatcher = setInterval(() => {
+    refreshForecastForEtBoundary().catch((error) => console.warn('[forecast] ET watcher failed', error));
+  }, 60_000);
+
+  const msToMidnight = getMsUntilNextEtMidnight();
+  etMidnightTimeout = setTimeout(() => {
+    refreshForecastForEtBoundary().catch((error) => console.warn('[forecast] ET midnight refresh failed', error));
+    startEtBoundaryWatch();
+  }, msToMidnight + 1000);
+}
+
 async function updateLocation(place) {
   activeLocation = place;
   elements.currentPlace.textContent = place.name;
@@ -176,16 +318,18 @@ async function updateLocation(place) {
 
   setStatus('Loading forecast, radar, and alerts…');
   try {
-    const [forecast, alerts] = await Promise.all([forecastForLocation(place.lat, place.lon), nwsAlertsByPoint(place.lat, place.lon)]);
-    latestForecast = forecast;
+    const [meteogramForecast, alerts] = await Promise.all([forecastForLocation(place.lat, place.lon), nwsAlertsByPoint(place.lat, place.lon)]);
+    latestMeteogramForecast = meteogramForecast;
 
-    renderCurrent(forecast);
-    renderHourly(forecast);
-    renderDaily(forecast);
-    renderMeteogram('meteogram', forecast.hourly, Number(elements.meteogramRange.value));
+    renderCurrent(meteogramForecast);
+    renderMeteogram('meteogram', meteogramForecast.hourly, Number(elements.meteogramRange.value));
     renderAlerts(alerts);
-
     weatherMap.updateAlerts(alerts.filter((a) => a.geometry));
+
+    await loadSourceForecast(place, selectedForecastSource, { showLoading: true });
+
+    lastEtDateKey = getEtDateKey();
+    lastEtHourKey = getEtHourKey();
     setStatus(`Updated ${place.name}`);
   } catch (error) {
     setStatus(`Unable to load all weather data: ${error.message}`, true);
@@ -217,9 +361,7 @@ async function initRadar() {
         updateRadarTimestamp(idx);
       },
       onState: ({ playing }) => {
-        if (typeof playing === 'boolean') {
-          elements.radarPlayBtn.textContent = playing ? 'Pause' : 'Play';
-        }
+        if (typeof playing === 'boolean') elements.radarPlayBtn.textContent = playing ? 'Pause' : 'Play';
       }
     });
 
@@ -227,7 +369,6 @@ async function initRadar() {
     radarController.setSpeed(Number(elements.radarSpeed.value));
     setRadarLoadState({ loading: false, error: null });
     radarManager.prefetchFrom(radarFrameSet.length - 1, CONFIG.map.radarPrefetchAhead);
-    console.info('[radar] Controller initialized', { count: radarFrameSet.length });
 
     if (!radarRefreshTimer) {
       radarRefreshTimer = setInterval(() => {
@@ -266,6 +407,15 @@ async function refreshRadarFrames({ jumpLatest = false } = {}) {
   elements.radarFrameRange.value = String(targetIndex);
   updateRadarTimestamp(targetIndex);
   setRadarLoadState({ loading: false, error: null });
+}
+
+function setupForecastSourceOptions() {
+  if (!elements.forecastSource) return;
+  const options = getForecastSourceOptions();
+  elements.forecastSource.innerHTML = options.map((option) => `<option value="${option.id}">${option.label}</option>`).join('');
+
+  if (!options.some((option) => option.id === selectedForecastSource)) selectedForecastSource = 'noaa';
+  elements.forecastSource.value = selectedForecastSource;
 }
 
 function setupControls() {
@@ -309,9 +459,21 @@ function setupControls() {
   elements.alertsToggle.addEventListener('change', (event) => weatherMap.toggleAlerts(event.target.checked));
 
   elements.meteogramRange.addEventListener('change', () => {
-    if (!latestForecast) return;
-    renderMeteogram('meteogram', latestForecast.hourly, Number(elements.meteogramRange.value));
+    if (!latestMeteogramForecast) return;
+    renderMeteogram('meteogram', latestMeteogramForecast.hourly, Number(elements.meteogramRange.value));
   });
+
+  if (elements.forecastSource) {
+    elements.forecastSource.addEventListener('change', async (event) => {
+      try {
+        await loadSourceForecast(activeLocation, event.target.value, { showLoading: true });
+        setStatus(`Switched forecast source to ${getForecastSource(event.target.value).label}.`);
+      } catch (error) {
+        elements.forecastSourceStatus.textContent = `Failed to load source: ${error.message}`;
+        elements.forecastSourceStatus.classList.add('error');
+      }
+    });
+  }
 
   elements.myLocationBtn.addEventListener('click', () => {
     if (!navigator.geolocation) {
@@ -328,6 +490,7 @@ function setupControls() {
 }
 
 async function init() {
+  setupForecastSourceOptions();
   setupControls();
   setupSearch({
     input: elements.searchInput,
@@ -339,6 +502,7 @@ async function init() {
   renderRecents();
   await initRadar();
   await updateLocation(activeLocation);
+  startEtBoundaryWatch();
 }
 
 init();
