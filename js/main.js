@@ -3,12 +3,9 @@ import { forecastForLocation, nwsAlertsByPoint } from './api.js';
 import { WeatherMap } from './map.js';
 import { renderMeteogram } from './chart.js';
 import { loadRecentSearches, saveRecentSearch, setupSearch } from './search.js';
-import { applySavedPreferences } from './ui-settings.js';
 import { fetchRadarFrames, formatRadarTimestamp } from './radar/frameFetcher.js';
 import { LeafletRadarLayerManager } from './radar/leafletRadarLayerManager.js';
 import { RadarController } from './radar/radarController.js';
-
-applySavedPreferences();
 
 const elements = {
   status: document.getElementById('status'),
@@ -66,7 +63,7 @@ function setRadarLoadState({ loading, error }) {
     return;
   }
   elements.radarLoadState.classList.remove('error');
-  elements.radarLoadState.textContent = loading ? 'Loading frames…' : `Ready (${radarFrameSet.length} frames)`;
+  elements.radarLoadState.textContent = loading ? 'Loading NOAA frames…' : `NOAA ready (${radarFrameSet.length} frames)`;
 }
 
 function weatherLabel(code) {

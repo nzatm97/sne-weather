@@ -9,13 +9,14 @@ export const CONFIG = {
       radarCacheSize: 18,
       darkTiles: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
       attribution:
-        '&copy; OpenStreetMap contributors &copy; CARTO &copy; RainViewer &copy; NWS'
+        '&copy; OpenStreetMap contributors &copy; CARTO &copy; NOAA'
     },
     endpoints: {
       geocode: 'https://nominatim.openstreetmap.org/search',
       reverseGeocode: 'https://nominatim.openstreetmap.org/reverse',
       forecast: 'https://api.open-meteo.com/v1/forecast',
-      radarMeta: 'https://api.rainviewer.com/public/weather-maps.json',
+      noaaRadarTimeStops: 'https://new.nowcoast.noaa.gov/layerinfo',
+      noaaRadarTiles: 'https://new.nowcoast.noaa.gov/arcgis/rest/services/nowcoast/radar_meteo_imagery_nexrad_time/MapServer/tile',
       nwsPoint: 'https://api.weather.gov/points',
       nwsAlertsActive: 'https://api.weather.gov/alerts/active'
     },

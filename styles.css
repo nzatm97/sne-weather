@@ -1,103 +1,41 @@
-:root,
-[data-theme='midnight-indigo'] {
+:root {
   color-scheme: dark;
-  --font-heading: 'Space Grotesk', 'Inter', 'Segoe UI', sans-serif;
-  --font-body: 'Inter', 'Segoe UI', sans-serif;
+  --font-heading: 'Plus Jakarta Sans', 'Manrope', 'Segoe UI', sans-serif;
+  --font-body: 'Manrope', 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, monospace;
 
-  --color-bg-0: #070b16;
-  --color-bg-1: #0e1630;
-  --color-bg-2: #152348;
-  --color-surface: #121d39;
-  --color-surface-elev: #18274a;
-  --color-border: #2c4473;
-  --color-border-strong: #3d609f;
-  --color-text-primary: #e9f1ff;
-  --color-text-secondary: #bfd0ec;
-  --color-text-muted: #95a8c8;
-  --color-accent-primary: #70deff;
-  --color-accent-secondary: #8fa6ff;
-  --color-success: #61d9ad;
-  --color-warning: #ffd479;
-  --color-error: #ff8ea5;
-  --color-link: #8cd5ff;
-  --color-link-hover: #b8e7ff;
-  --color-focus: #79f0ff;
+  --color-bg-0: #0f1219;
+  --color-bg-1: #171b25;
+  --color-bg-2: #21293a;
+  --color-surface: #171b25;
+  --color-surface-elev: #21293a;
+  --color-border: #39445b;
+  --color-border-strong: #4b5b79;
+  --color-text-primary: #e9effb;
+  --color-text-secondary: #c5d0e4;
+  --color-text-muted: #99a9c6;
+  --color-accent-primary: #8fc5ff;
+  --color-accent-secondary: #a4d4ff;
+  --color-success: #66d2b1;
+  --color-warning: #ffd080;
+  --color-error: #ff8e9f;
+  --color-link: #9ecfff;
+  --color-link-hover: #c4e1ff;
+  --color-focus: #8fc5ff;
 
-  --bg-gradient-a: rgba(111, 149, 255, 0.26);
-  --bg-gradient-b: rgba(80, 213, 255, 0.2);
-  --chart-temp-fill-strong: rgba(112, 222, 255, 0.5);
-  --chart-temp-fill-soft: rgba(112, 222, 255, 0.05);
-  --chart-temp-line: #7be4ff;
-  --chart-precip-bar: rgba(145, 130, 255, 0.5);
-  --chart-wind-line: #ffd479;
-  --chart-grid: rgba(146, 166, 205, 0.2);
-  --chart-now-line: rgba(255, 212, 121, 0.82);
+  --bg-gradient-a: rgba(106, 141, 190, 0.2);
+  --bg-gradient-b: rgba(143, 197, 255, 0.12);
+  --chart-temp-fill-strong: rgba(143, 197, 255, 0.42);
+  --chart-temp-fill-soft: rgba(143, 197, 255, 0.04);
+  --chart-temp-line: #9fd1ff;
+  --chart-precip-bar: rgba(156, 181, 231, 0.48);
+  --chart-wind-line: #ffd080;
+  --chart-grid: rgba(132, 151, 184, 0.2);
+  --chart-now-line: rgba(159, 209, 255, 0.82);
 
   --max-width: 1520px;
 }
 
-[data-theme='carbon-ember'] {
-  --color-bg-0: #0c0a0b;
-  --color-bg-1: #1a1316;
-  --color-bg-2: #2a1b1f;
-  --color-surface: #1d1519;
-  --color-surface-elev: #271b20;
-  --color-border: #4a343d;
-  --color-border-strong: #704955;
-  --color-text-primary: #f8eff2;
-  --color-text-secondary: #e2c7cf;
-  --color-text-muted: #c5a8b0;
-  --color-accent-primary: #ffb27f;
-  --color-accent-secondary: #ff7a65;
-  --color-success: #8bdd9f;
-  --color-warning: #ffd37e;
-  --color-error: #ff8f88;
-  --color-link: #ffc49a;
-  --color-link-hover: #ffe1c3;
-  --color-focus: #ffb385;
-
-  --bg-gradient-a: rgba(255, 136, 94, 0.19);
-  --bg-gradient-b: rgba(255, 89, 62, 0.13);
-  --chart-temp-fill-strong: rgba(255, 186, 115, 0.45);
-  --chart-temp-fill-soft: rgba(255, 186, 115, 0.05);
-  --chart-temp-line: #ffbe75;
-  --chart-precip-bar: rgba(255, 122, 101, 0.48);
-  --chart-wind-line: #ffd37e;
-  --chart-grid: rgba(169, 124, 131, 0.24);
-  --chart-now-line: rgba(255, 178, 127, 0.8);
-}
-
-[data-theme='deep-forest'] {
-  --color-bg-0: #07120f;
-  --color-bg-1: #0f231d;
-  --color-bg-2: #173228;
-  --color-surface: #122b22;
-  --color-surface-elev: #1a382e;
-  --color-border: #2d5a49;
-  --color-border-strong: #427c66;
-  --color-text-primary: #e7fbf4;
-  --color-text-secondary: #b7e1d3;
-  --color-text-muted: #8fbeae;
-  --color-accent-primary: #63f0c7;
-  --color-accent-secondary: #75c4ff;
-  --color-success: #79e8a3;
-  --color-warning: #ffe38d;
-  --color-error: #ff9ca5;
-  --color-link: #8feacc;
-  --color-link-hover: #bcffe8;
-  --color-focus: #7ce9e0;
-
-  --bg-gradient-a: rgba(85, 215, 170, 0.2);
-  --bg-gradient-b: rgba(117, 196, 255, 0.14);
-  --chart-temp-fill-strong: rgba(99, 240, 199, 0.42);
-  --chart-temp-fill-soft: rgba(99, 240, 199, 0.04);
-  --chart-temp-line: #8bf6d6;
-  --chart-precip-bar: rgba(117, 196, 255, 0.5);
-  --chart-wind-line: #ffe38d;
-  --chart-grid: rgba(114, 168, 149, 0.22);
-  --chart-now-line: rgba(117, 196, 255, 0.8);
-}
 
 * {
   box-sizing: border-box;

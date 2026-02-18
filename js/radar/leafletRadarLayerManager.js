@@ -33,7 +33,7 @@ export class LeafletRadarLayerManager {
 
   frameUrl(index) {
     const frame = this.frames[index];
-    return `https://tilecache.rainviewer.com${frame.path}/256/{z}/{x}/{y}/6/1_1.png`;
+    return frame.tileUrl;
   }
 
   getOrCreateEntry(index) {
@@ -42,7 +42,7 @@ export class LeafletRadarLayerManager {
     const layer = L.tileLayer(this.frameUrl(index), {
       opacity: 0,
       zIndex: 450,
-      attribution: 'RainViewer',
+      attribution: 'NOAA',
       updateWhenIdle: false,
       keepBuffer: 4
     });

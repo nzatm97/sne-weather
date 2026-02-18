@@ -9,27 +9,34 @@ async function fetchJson(url, options = {}) {
   return response.json();
 }
 
-function sortByTime(frames) {
-  return [...frames].sort((a, b) => (a.time ?? 0) - (b.time ?? 0));
+function normalizeNoaaFrames(timeStops) {
+  const sorted = [...timeStops].sort((a, b) => a - b);
+  return sorted.slice(-CONFIG.map.maxRadarFrames).map((timeMs) => ({
+    time: timeMs,
+    provider: 'NOAA',
+    tileUrl: `${CONFIG.endpoints.noaaRadarTiles}/{z}/{y}/{x}?blankTile=false&time=${timeMs}`
+  }));
 }
 
-function normalizeRadarFrames(data) {
-  const past = data.radar?.past ?? [];
-  const nowcast = data.radar?.nowcast ?? [];
-  const deduped = [...past, ...nowcast].filter((frame, idx, all) => all.findIndex((f) => f.path === frame.path) === idx);
-  return sortByTime(deduped).slice(-CONFIG.map.maxRadarFrames);
-}
-
-export function formatRadarTimestamp(unixSeconds) {
-  return new Date(unixSeconds * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+export function formatRadarTimestamp(rawTime) {
+  const timeMs = rawTime > 1e12 ? rawTime : rawTime * 1000;
+  return new Date(timeMs).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 }
 
 export async function fetchRadarFrames() {
   const cached = getCached('radar', 'frames', CONFIG.cacheTtlMs.radar);
   if (cached) return cached;
 
-  const data = await fetchJson(CONFIG.endpoints.radarMeta);
-  const frames = normalizeRadarFrames(data);
+  const params = new URLSearchParams({
+    request: 'timestops',
+    service: 'radar_meteo_imagery_nexrad_time',
+    layers: '3',
+    format: 'json'
+  });
+
+  const data = await fetchJson(`${CONFIG.endpoints.noaaRadarTimeStops}?${params.toString()}`);
+  const timeStops = data.layers?.[0]?.timeStops ?? [];
+  const frames = normalizeNoaaFrames(timeStops);
   if (frames.length < 2) throw new Error('Insufficient radar frames available.');
   setCached('radar', 'frames', frames);
   console.info('[radar] Frames loaded', { count: frames.length, first: frames[0].time, last: frames.at(-1).time });
