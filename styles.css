@@ -1070,15 +1070,20 @@ select,
   }
 
   .top-banner {
-    height: clamp(142px, 44vw, 196px);
-    background-position: center;
+    height: clamp(128px, 36vw, 176px);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-color: #080707;
   }
 
   .sidebar nav {
     gap: 0.38rem;
-    width: calc(100% - 0.7rem);
-    bottom: 0.36rem;
-    padding: 0.08rem;
+    position: static;
+    transform: none;
+    width: calc(100% - 1.2rem);
+    margin: 0.2rem auto 0;
+    padding: 0.08rem 0;
   }
 
   .nav-link {
