@@ -12,7 +12,8 @@ async function fetchJson(url, options = {}) {
 function normalizeRainViewerFrames(data) {
   const past = data.radar?.past ?? [];
   const nowcast = data.radar?.nowcast ?? [];
-  const deduped = [...past, ...nowcast].filter((frame, idx, all) => all.findIndex((f) => f.path === frame.path) === idx);
+  const source = past.length ? past : [...past, ...nowcast];
+  const deduped = source.filter((frame, idx, all) => all.findIndex((f) => f.path === frame.path) === idx);
   return deduped.slice(-CONFIG.map.maxRadarFrames).map((frame) => ({
     time: frame.time,
     provider: 'RainViewer',
@@ -24,8 +25,9 @@ export function formatRadarTimestamp(rawTime) {
   return new Date(rawTime * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 }
 
-export async function fetchRadarFrames() {
-  const cached = getCached('radar', 'frames', CONFIG.cacheTtlMs.radar);
+export async function fetchRadarFrames(options = {}) {
+  const { force = false } = options;
+  const cached = !force ? getCached('radar', 'frames', CONFIG.cacheTtlMs.radar) : null;
   if (cached) return cached;
 
   const data = await fetchJson(CONFIG.endpoints.radarMeta);

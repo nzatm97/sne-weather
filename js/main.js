@@ -42,6 +42,7 @@ let latestForecast = null;
 let radarFrameSet = [];
 let radarManager;
 let radarController;
+let radarRefreshTimer = null;
 
 function setStatus(message, isError = false) {
   elements.status.textContent = message;
@@ -200,10 +201,44 @@ async function initRadar() {
     setRadarLoadState({ loading: false, error: null });
     radarManager.prefetchFrom(radarFrameSet.length - 1, CONFIG.map.radarPrefetchAhead);
     console.info('[radar] Controller initialized', { count: radarFrameSet.length });
+
+    if (!radarRefreshTimer) {
+      radarRefreshTimer = setInterval(() => {
+        refreshRadarFrames({ jumpLatest: false }).catch((error) => {
+          console.warn('[radar] Periodic refresh failed', error);
+        });
+      }, 1000 * 60 * 3);
+    }
   } catch (error) {
     setRadarLoadState({ loading: false, error: error.message });
     setStatus(`Radar unavailable: ${error.message}`, true);
   }
+}
+
+async function refreshRadarFrames({ jumpLatest = false } = {}) {
+  if (!radarManager) return;
+
+  const previousIndex = Number(elements.radarFrameRange.value || 0);
+  const previousTime = radarFrameSet[previousIndex]?.time;
+  const frames = await fetchRadarFrames({ force: true });
+  if (!frames.length) return;
+
+  radarFrameSet = frames;
+  elements.radarFrameRange.max = String(frames.length - 1);
+
+  let targetIndex = frames.length - 1;
+  if (!jumpLatest && previousTime) {
+    const matched = frames.findIndex((frame) => frame.time === previousTime);
+    if (matched >= 0) targetIndex = matched;
+  }
+
+  radarManager.setFrames(frames);
+  await radarManager.setFrame(targetIndex, { animate: false });
+
+  if (radarController) radarController.currentIndex = targetIndex;
+  elements.radarFrameRange.value = String(targetIndex);
+  updateRadarTimestamp(targetIndex);
+  setRadarLoadState({ loading: false, error: null });
 }
 
 function setupControls() {
@@ -228,7 +263,7 @@ function setupControls() {
   elements.radarLatestBtn.addEventListener('click', async () => {
     if (!radarController) return;
     radarController.pause();
-    await radarController.latest();
+    await refreshRadarFrames({ jumpLatest: true });
   });
 
   elements.radarFrameRange.addEventListener('input', async (event) => {
