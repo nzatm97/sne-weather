@@ -3,9 +3,9 @@ import { getGfsForecast } from './providers/gfsProvider.js';
 import { getEcmwfForecast } from './providers/ecmwfProvider.js';
 
 export const FORECAST_SOURCES = {
-  noaa: { id: 'noaa', label: 'NOAA / NWS', load: getNoaaNwsForecast },
-  gfs: { id: 'gfs', label: 'GFS', load: getGfsForecast },
-  ecmwf: { id: 'ecmwf', label: 'ECMWF', load: getEcmwfForecast }
+  noaa: { id: 'noaa', label: 'National Weather Service (NOAA/NWS)', load: getNoaaNwsForecast },
+  gfs: { id: 'gfs', label: 'American Model (GFS)', load: getGfsForecast },
+  ecmwf: { id: 'ecmwf', label: 'European Model (ECMWF)', load: getEcmwfForecast }
 };
 
 export function getForecastSource(id) {
@@ -15,4 +15,3 @@ export function getForecastSource(id) {
 export function getForecastSourceOptions() {
   return Object.values(FORECAST_SOURCES);
 }
-

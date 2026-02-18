@@ -26,6 +26,7 @@
       <div class="content-wrap">
         <div class="quick-tools">
           <div class="search-wrap">
+            <p class="step-heading step-heading--location">Choose Your Location</p>
             <input id="locationSearch" type="search" placeholder="Search city, state (e.g., Boston, MA)" aria-label="Location search" />
             <ul id="searchResults" class="search-results" aria-label="Location suggestions"></ul>
           </div>
@@ -33,19 +34,16 @@
         </div>
 
         <section class="hero-photo card">
-          <div class="hero-strip__content">
-            <h1>Choose Your Forecast.</h1>
-            <p class="hero-strip__subhead">Compare NOAA, GFS, and Euro — then scroll for the details.</p>
-            <p class="hero-scroll-cue" aria-hidden="true">Scroll ↓</p>
-          </div>
           <div class="hero-source-picker">
-            <label for="forecastSource">Forecast Source</label>
+            <h1 class="step-heading">Choose Your Weather Model.</h1>
+            <label for="forecastSource" class="sr-only">Forecast Source</label>
             <select id="forecastSource" aria-label="Forecast Source">
-              <option value="noaa">NOAA / NWS</option>
-              <option value="gfs">GFS</option>
-              <option value="ecmwf">ECMWF</option>
+              <option value="noaa">National Weather Service (NOAA/NWS)</option>
+              <option value="gfs">American Model (GFS)</option>
+              <option value="ecmwf">European Model (ECMWF)</option>
             </select>
-            <p id="forecastSourceStatus" class="muted">Using NOAA / NWS</p>
+            <p id="forecastSourceStatus" class="muted">Selected: National Weather Service (NOAA/NWS)</p>
+            <p class="step-subtle" aria-hidden="true">Scroll to View Forecast ↓</p>
           </div>
         </section>
 

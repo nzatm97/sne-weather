@@ -124,7 +124,7 @@ function normalizeSourceStatus(model) {
     return;
   }
 
-  elements.forecastSourceStatus.textContent = `Using ${model.sourceLabel}`;
+  elements.forecastSourceStatus.textContent = `Selected: ${model.sourceLabel}`;
   elements.forecastSourceStatus.classList.remove('error');
 }
 
