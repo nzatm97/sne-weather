@@ -4,34 +4,34 @@
   --font-body: 'Manrope', 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, monospace;
 
-  --color-bg-0: #0d1822;
-  --color-bg-1: #132736;
-  --color-bg-2: #1c3345;
-  --color-surface: #152b3a;
-  --color-surface-elev: #1d364a;
-  --color-border: #364d61;
-  --color-border-strong: #4e6a84;
-  --color-text-primary: #edf4fb;
-  --color-text-secondary: #c6d8ea;
-  --color-text-muted: #9ab1c7;
-  --color-accent-primary: #93cbff;
-  --color-accent-secondary: #d3a063;
-  --color-success: #72ccb1;
-  --color-warning: #f0c179;
-  --color-error: #f49ca3;
-  --color-link: #a8d4ff;
-  --color-link-hover: #cfe7ff;
-  --color-focus: #d9aa6e;
+  --color-bg-0: #14120f;
+  --color-bg-1: #1d1a15;
+  --color-bg-2: #28231b;
+  --color-surface: #1d1a15;
+  --color-surface-elev: #29231a;
+  --color-border: #4f4435;
+  --color-border-strong: #695845;
+  --color-text-primary: #f4efe4;
+  --color-text-secondary: #d7ccb9;
+  --color-text-muted: #afa48f;
+  --color-accent-primary: #d3b07a;
+  --color-accent-secondary: #8c9d6f;
+  --color-success: #8fbb8a;
+  --color-warning: #d8b16d;
+  --color-error: #d88f80;
+  --color-link: #daba87;
+  --color-link-hover: #ecd3a8;
+  --color-focus: #d3b07a;
 
-  --bg-gradient-a: rgba(150, 201, 246, 0.22);
-  --bg-gradient-b: rgba(194, 143, 78, 0.17);
-  --chart-temp-fill-strong: rgba(147, 203, 255, 0.42);
-  --chart-temp-fill-soft: rgba(147, 203, 255, 0.05);
-  --chart-temp-line: #a7d8ff;
-  --chart-precip-bar: rgba(167, 189, 224, 0.52);
-  --chart-wind-line: #f0c179;
-  --chart-grid: rgba(140, 166, 194, 0.24);
-  --chart-now-line: rgba(167, 216, 255, 0.84);
+  --bg-gradient-a: rgba(174, 149, 103, 0.18);
+  --bg-gradient-b: rgba(128, 151, 110, 0.14);
+  --chart-temp-fill-strong: rgba(211, 176, 122, 0.35);
+  --chart-temp-fill-soft: rgba(211, 176, 122, 0.06);
+  --chart-temp-line: #e3c38f;
+  --chart-precip-bar: rgba(146, 159, 125, 0.5);
+  --chart-wind-line: #e3c38f;
+  --chart-grid: rgba(126, 111, 89, 0.28);
+  --chart-now-line: rgba(223, 193, 140, 0.82);
 
   --max-width: 1520px;
 }
@@ -233,14 +233,14 @@ select,
 }
 
 .hero-photo {
-  min-height: 132px;
+  min-height: 170px;
   margin-bottom: 0.7rem;
   display: flex;
   align-items: flex-end;
   padding: 0.9rem 1rem;
   background:
     linear-gradient(180deg, rgba(4, 8, 18, 0.2), rgba(4, 8, 18, 0.62)),
-    url('assets/sne_weather.jpg') center/cover no-repeat;
+    url('assets/sne_weather.jpg') center 46%/cover no-repeat;
 }
 
 .hero-strip__content {
@@ -822,7 +822,7 @@ select,
   }
 
   .hero-photo {
-    min-height: 98px;
+    min-height: 136px;
     padding: 0.68rem 0.72rem;
   }
 
