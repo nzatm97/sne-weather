@@ -23,9 +23,47 @@
       <div class="content-wrap">
         <section class="card simple-page">
           <h1>Social Media</h1>
-          <p>Southern New England Weather placeholder page. This section is ready for expanded content.</p>
+          <p>Latest posts from X</p>
+          <div class="social-embed">
+            <a id="xProfileButton" class="btn btn-secondary" href="https://x.com/zaleweather" target="_blank" rel="noopener noreferrer">
+              View @zaleweather on X
+            </a>
+            <a
+              id="xTimelineLink"
+              class="twitter-timeline"
+              data-theme="dark"
+              data-height="680"
+              data-chrome="noheader nofooter"
+              data-dnt="true"
+              href="https://twitter.com/zaleweather?ref_src=twsrc%5Etfw"
+            >
+              Posts by @zaleweather
+            </a>
+          </div>
+          <p class="muted">If the timeline is empty, the account may be private or have no recent public posts.</p>
         </section>
       </div>
     </div>
+
+    <script>
+      // Update this one value to point the page at your X account.
+      const X_HANDLE = 'SNEZweather';
+
+      const profileButton = document.getElementById('xProfileButton');
+      const timelineLink = document.getElementById('xTimelineLink');
+      const profileUrl = `https://x.com/${X_HANDLE}`;
+      const timelineUrl = `https://twitter.com/${X_HANDLE}?ref_src=twsrc%5Etfw`;
+
+      if (profileButton) {
+        profileButton.href = profileUrl;
+        profileButton.textContent = `View @${X_HANDLE} on X`;
+      }
+
+      if (timelineLink) {
+        timelineLink.href = timelineUrl;
+        timelineLink.textContent = `Posts by @${X_HANDLE}`;
+      }
+    </script>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
   </body>
 </html>
