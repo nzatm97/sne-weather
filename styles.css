@@ -4,34 +4,34 @@
   --font-body: 'Manrope', 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, monospace;
 
-  --color-bg-0: #0f1219;
-  --color-bg-1: #171b25;
-  --color-bg-2: #21293a;
-  --color-surface: #171b25;
-  --color-surface-elev: #21293a;
-  --color-border: #39445b;
-  --color-border-strong: #4b5b79;
-  --color-text-primary: #e9effb;
-  --color-text-secondary: #c5d0e4;
-  --color-text-muted: #99a9c6;
-  --color-accent-primary: #8fc5ff;
-  --color-accent-secondary: #a4d4ff;
-  --color-success: #66d2b1;
-  --color-warning: #ffd080;
-  --color-error: #ff8e9f;
-  --color-link: #9ecfff;
-  --color-link-hover: #c4e1ff;
-  --color-focus: #8fc5ff;
+  --color-bg-0: #0d1822;
+  --color-bg-1: #132736;
+  --color-bg-2: #1c3345;
+  --color-surface: #152b3a;
+  --color-surface-elev: #1d364a;
+  --color-border: #364d61;
+  --color-border-strong: #4e6a84;
+  --color-text-primary: #edf4fb;
+  --color-text-secondary: #c6d8ea;
+  --color-text-muted: #9ab1c7;
+  --color-accent-primary: #93cbff;
+  --color-accent-secondary: #d3a063;
+  --color-success: #72ccb1;
+  --color-warning: #f0c179;
+  --color-error: #f49ca3;
+  --color-link: #a8d4ff;
+  --color-link-hover: #cfe7ff;
+  --color-focus: #d9aa6e;
 
-  --bg-gradient-a: rgba(106, 141, 190, 0.2);
-  --bg-gradient-b: rgba(143, 197, 255, 0.12);
-  --chart-temp-fill-strong: rgba(143, 197, 255, 0.42);
-  --chart-temp-fill-soft: rgba(143, 197, 255, 0.04);
-  --chart-temp-line: #9fd1ff;
-  --chart-precip-bar: rgba(156, 181, 231, 0.48);
-  --chart-wind-line: #ffd080;
-  --chart-grid: rgba(132, 151, 184, 0.2);
-  --chart-now-line: rgba(159, 209, 255, 0.82);
+  --bg-gradient-a: rgba(150, 201, 246, 0.22);
+  --bg-gradient-b: rgba(194, 143, 78, 0.17);
+  --chart-temp-fill-strong: rgba(147, 203, 255, 0.42);
+  --chart-temp-fill-soft: rgba(147, 203, 255, 0.05);
+  --chart-temp-line: #a7d8ff;
+  --chart-precip-bar: rgba(167, 189, 224, 0.52);
+  --chart-wind-line: #f0c179;
+  --chart-grid: rgba(140, 166, 194, 0.24);
+  --chart-now-line: rgba(167, 216, 255, 0.84);
 
   --max-width: 1520px;
 }
@@ -517,15 +517,38 @@ select,
 }
 
 .hourly-details > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
   cursor: pointer;
   font-family: var(--font-heading);
   font-size: 1rem;
   font-weight: 600;
   list-style: none;
+  user-select: none;
 }
 
 .hourly-details > summary::-webkit-details-marker {
   display: none;
+}
+
+.hourly-details > summary::after {
+  content: '▾';
+  font-size: 1.05rem;
+  color: var(--color-text-muted);
+  transition: transform 160ms ease;
+}
+
+.hourly-details[open] > summary::after {
+  transform: rotate(180deg);
+}
+
+.hourly-details > summary small {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
 }
 
 .hourly-details[open] > summary {
@@ -534,12 +557,8 @@ select,
 
 .hourly-grid {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(142px, 1fr);
+  grid-template-columns: 1fr;
   gap: 0.45rem;
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  padding-bottom: 0.1rem;
 }
 
 .mini-card--hourly .mini-card__title {
@@ -551,7 +570,6 @@ select,
 }
 
 .mini-card--hourly {
-  scroll-snap-align: start;
   min-height: 82px;
 }
 
