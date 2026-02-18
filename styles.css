@@ -233,6 +233,7 @@ select,
 }
 
 .hero-photo {
+  position: relative;
   min-height: 170px;
   margin-bottom: 0.7rem;
   display: flex;
@@ -241,6 +242,25 @@ select,
   background:
     linear-gradient(180deg, rgba(4, 8, 18, 0.2), rgba(4, 8, 18, 0.62)),
     url('assets/sne_weather.jpg') center 46%/cover no-repeat;
+}
+
+.hero-brand {
+  position: absolute;
+  top: 0.7rem;
+  left: 0.8rem;
+  padding: 0.34rem;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--color-bg-0), transparent 24%);
+  border: 1px solid color-mix(in oklab, var(--color-accent-primary), transparent 42%);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+}
+
+.hero-brand__logo {
+  display: block;
+  width: clamp(110px, 12vw, 160px);
+  height: auto;
+  border-radius: 8px;
 }
 
 .hero-strip__content {
@@ -908,6 +928,16 @@ select,
   .hero-photo {
     min-height: 136px;
     padding: 0.68rem 0.72rem;
+  }
+
+  .hero-brand {
+    top: 0.55rem;
+    left: 0.58rem;
+    padding: 0.25rem;
+  }
+
+  .hero-brand__logo {
+    width: clamp(92px, 34vw, 128px);
   }
 
   .controls-grid {
