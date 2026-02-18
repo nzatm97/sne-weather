@@ -48,6 +48,19 @@
               <span class="badge">Radar + Alerts</span>
             </div>
 
+            <section class="current-hero card">
+              <div class="current-hero__icon" id="currentIconLarge" aria-hidden="true">--</div>
+              <div class="current-hero__main">
+                <p class="current-hero__label">Current Conditions</p>
+                <div class="current-hero__temp" id="tempNow">--</div>
+                <div class="current-hero__summary" id="summaryNow">--</div>
+              </div>
+              <div class="current-hero__meta">
+                <div><span class="metric">Feels</span><strong id="feelsNow">--</strong></div>
+                <div><span class="metric">Wind</span><strong id="windNow">--</strong></div>
+              </div>
+            </section>
+
             <div class="layer-controls">
               <span class="chip">Overlay</span>
               <label><input id="layerRadar" type="checkbox" checked /> Radar</label>
@@ -92,16 +105,6 @@
           </section>
 
           <aside class="side-panel">
-            <section class="card current-card">
-              <h3>Current Conditions</h3>
-              <div class="current-grid">
-                <div><span class="metric">Temp</span><strong id="tempNow">--</strong></div>
-                <div><span class="metric">Feels</span><strong id="feelsNow">--</strong></div>
-                <div><span class="metric">Wind</span><strong id="windNow">--</strong></div>
-                <div><span class="metric">Summary</span><strong id="summaryNow">--</strong></div>
-              </div>
-            </section>
-
             <section class="card">
               <div class="section-head">
                 <h3>NWS Alerts</h3>
@@ -112,7 +115,7 @@
 
             <section class="card">
               <div class="section-head">
-                <h3>Meteogram</h3>
+                <h3>Previous Day (Meteogram)</h3>
                 <select id="meteogramRange">
                   <option value="24">24h</option>
                   <option value="48" selected>48h</option>
@@ -123,7 +126,14 @@
             </section>
 
             <section class="card">
-              <h3>5-Day Snapshot</h3>
+              <details class="hourly-details">
+                <summary>Next 18 Hours Forecast</summary>
+                <div id="hourlyGrid" class="hourly-grid"></div>
+              </details>
+            </section>
+
+            <section class="card">
+              <h3>5-Day Forecast</h3>
               <div id="dailyGrid" class="daily-grid"></div>
             </section>
 

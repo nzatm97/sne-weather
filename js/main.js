@@ -14,11 +14,13 @@ const elements = {
   searchResults: document.getElementById('searchResults'),
   recentSearches: document.getElementById('recentSearches'),
   myLocationBtn: document.getElementById('myLocationBtn'),
+  currentIconLarge: document.getElementById('currentIconLarge'),
   tempNow: document.getElementById('tempNow'),
   feelsNow: document.getElementById('feelsNow'),
   windNow: document.getElementById('windNow'),
   summaryNow: document.getElementById('summaryNow'),
   dailyGrid: document.getElementById('dailyGrid'),
+  hourlyGrid: document.getElementById('hourlyGrid'),
   alertsList: document.getElementById('alertsList'),
   alertsToggle: document.getElementById('alertsToggle'),
   radarPlayBtn: document.getElementById('radarPlayBtn'),
@@ -85,7 +87,31 @@ function renderCurrent(data) {
   elements.tempNow.textContent = `${Math.round(current.temperature_2m)}°F`;
   elements.feelsNow.textContent = `${Math.round(current.apparent_temperature)}°F`;
   elements.windNow.textContent = `${Math.round(current.wind_speed_10m)} mph`;
-  elements.summaryNow.textContent = weatherLabel(current.weather_code);
+  const summary = weatherLabel(current.weather_code);
+  elements.summaryNow.textContent = summary;
+  if (elements.currentIconLarge) elements.currentIconLarge.textContent = weatherIcon(summary);
+}
+
+function renderHourly(data) {
+  if (!elements.hourlyGrid) return;
+  elements.hourlyGrid.innerHTML = '';
+
+  data.hourly.time.slice(0, 18).forEach((time, idx) => {
+    const code = data.hourly.weather_code?.[idx];
+    const label = weatherLabel(code);
+    const rainChance = Math.round(data.hourly.precipitation_probability?.[idx] ?? 0);
+    const card = document.createElement('article');
+    card.className = 'mini-card mini-card--hourly';
+    card.innerHTML = `
+      <div class="weather-icon" aria-hidden="true">${weatherIcon(label)}</div>
+      <div>
+        <div class="mini-card__title">${new Date(time).toLocaleTimeString([], { hour: 'numeric' })}</div>
+        <div class="mini-card__value">${Math.round(data.hourly.temperature_2m[idx])}°F</div>
+        <div class="mini-card__meta">${label} · Rain ${rainChance}%</div>
+      </div>
+    `;
+    elements.hourlyGrid.append(card);
+  });
 }
 
 function renderDaily(data) {
@@ -154,6 +180,7 @@ async function updateLocation(place) {
     latestForecast = forecast;
 
     renderCurrent(forecast);
+    renderHourly(forecast);
     renderDaily(forecast);
     renderMeteogram('meteogram', forecast.hourly, Number(elements.meteogramRange.value));
     renderAlerts(alerts);

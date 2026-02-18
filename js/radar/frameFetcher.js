@@ -12,7 +12,7 @@ async function fetchJson(url, options = {}) {
 function normalizeRainViewerFrames(data) {
   const past = data.radar?.past ?? [];
   const nowcast = data.radar?.nowcast ?? [];
-  const source = past.length ? past : [...past, ...nowcast];
+  const source = [...past, ...nowcast];
   const deduped = source.filter((frame, idx, all) => all.findIndex((f) => f.path === frame.path) === idx);
   return deduped.slice(-CONFIG.map.maxRadarFrames).map((frame) => ({
     time: frame.time,
