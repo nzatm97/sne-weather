@@ -871,6 +871,29 @@ select,
   color: var(--color-accent-primary);
 }
 
+.about-layout {
+  display: grid;
+  grid-template-columns: 132px 1fr;
+  gap: 0.9rem;
+  align-items: start;
+}
+
+.about-photo {
+  width: 132px;
+  height: 132px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+}
+
+.about-copy p {
+  margin: 0 0 0.8rem;
+}
+
+.about-copy p:last-child {
+  margin-bottom: 0;
+}
+
 .settings-row {
   display: grid;
   grid-template-columns: auto 1fr auto 1fr;
@@ -1222,5 +1245,14 @@ select,
 
   .settings-row {
     grid-template-columns: 1fr;
+  }
+
+  .about-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .about-photo {
+    width: 104px;
+    height: 104px;
   }
 }
