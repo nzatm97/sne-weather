@@ -1,5 +1,5 @@
 export const CONFIG = {
-    defaultLocation: { name: 'Providence, RI', lat: 41.824, lon: -71.4128 },
+    defaultLocation: { name: 'Hartford, CT', lat: 41.7658, lon: -72.6734 },
     map: {
       initialZoom: 7,
       maxRadarFrames: 12,
