@@ -110,6 +110,8 @@ function buildDaily(periods, gridData) {
         dateKey: entry.dateKey,
         timestamp: primary.startTime,
         shortText: primary.shortForecast || 'Mixed conditions',
+        weatherCode: null,
+        isDay: primary.isDaytime ? 1 : 0,
         iconUrl: primary.icon || null,
         high: Number.isFinite(high) ? Math.round(high) : null,
         low: Number.isFinite(low) ? Math.round(low) : null,
@@ -130,6 +132,8 @@ function buildHourly(periods) {
     return {
       timestamp: period.startTime,
       shortText: period.shortForecast || 'Mixed conditions',
+      weatherCode: null,
+      isDay: period.isDaytime ? 1 : 0,
       iconUrl: period.icon || null,
       temp: Number.isFinite(Number(period.temperature)) ? Math.round(period.temperature) : null,
       windSpeedMph: windSpeed,

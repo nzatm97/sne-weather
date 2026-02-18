@@ -51,6 +51,12 @@ export function getEtHourKey(input = new Date()) {
   return `${partValue(parts, 'year')}-${partValue(parts, 'month')}-${partValue(parts, 'day')}T${partValue(parts, 'hour')}`;
 }
 
+export function getEtHourNumber(input = new Date()) {
+  const date = toDate(input);
+  const parts = ET_HOUR_FORMATTER.formatToParts(date);
+  return Number(partValue(parts, 'hour'));
+}
+
 export function formatEtWeekday(input) {
   return ET_WEEKDAY_FORMATTER.format(toDate(input));
 }

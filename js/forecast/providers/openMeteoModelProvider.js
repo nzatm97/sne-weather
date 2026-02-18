@@ -1,6 +1,6 @@
 import { CONFIG } from '../../config.js';
 import { getCached, setCached } from '../../cache.js';
-import { getEtDateKey } from '../../time/easternTime.js';
+import { getEtDateKey, getEtHourNumber } from '../../time/easternTime.js';
 
 function toNumber(value) {
   const num = Number(value);
@@ -86,6 +86,11 @@ function normalizeHourly(data) {
     return {
       timestamp: date.toISOString(),
       shortText: weatherLabel(hourly.weather_code?.[idx]),
+      weatherCode: toNumber(hourly.weather_code?.[idx]),
+      isDay: (() => {
+        const hour = getEtHourNumber(date);
+        return Number.isFinite(hour) ? (hour >= 6 && hour < 18 ? 1 : 0) : null;
+      })(),
       iconUrl: null,
       temp: toNumber(hourly.temperature_2m?.[idx]),
       windSpeedMph: toNumber(hourly.wind_speed_10m?.[idx]),
@@ -148,6 +153,8 @@ function normalizeDaily(data) {
       dateKey,
       timestamp: date.toISOString(),
       shortText: weatherLabel(daily.weather_code?.[idx]),
+      weatherCode: toNumber(daily.weather_code?.[idx]),
+      isDay: 1,
       iconUrl: null,
       high: high === null ? null : Math.round(high),
       low: low === null ? null : Math.round(low),
@@ -193,4 +200,3 @@ export async function getOpenMeteoModelForecast({ endpoint, cacheNamespace, sour
   setCached(cacheNamespace, key, normalized);
   return normalized;
 }
-

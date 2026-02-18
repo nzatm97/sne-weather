@@ -370,10 +370,9 @@ select,
   border-radius: 14px;
   display: grid;
   place-items: center;
-  font-size: 2.8rem;
-  line-height: 1;
   background: color-mix(in oklab, var(--color-accent-primary), transparent 86%);
   border: 1px solid color-mix(in oklab, var(--color-accent-primary), white 16%);
+  padding: 0.4rem;
 }
 
 .current-hero__label {
@@ -656,8 +655,22 @@ select,
 }
 
 .weather-icon {
-  font-size: 1.35rem;
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.2));
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+}
+
+.weather-icon-svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.18));
+}
+
+.weather-icon-svg--large {
+  width: 100%;
+  height: 100%;
 }
 
 .mini-card__title,

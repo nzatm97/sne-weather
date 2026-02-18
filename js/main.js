@@ -7,9 +7,10 @@ import { fetchRadarFrames, formatRadarTimestamp } from './radar/frameFetcher.js'
 import { LeafletRadarLayerManager } from './radar/leafletRadarLayerManager.js';
 import { RadarController } from './radar/radarController.js';
 import { getForecastSource, getForecastSourceOptions } from './forecast/providerRegistry.js';
-import { formatEtHourLabel, formatEtWeekday, formatWeekdayFromDateKey, getEtDateKey, getEtHourKey, getMsUntilNextEtMidnight } from './time/easternTime.js';
+import { formatEtHourLabel, formatEtWeekday, formatWeekdayFromDateKey, getEtDateKey, getEtHourKey, getEtHourNumber, getMsUntilNextEtMidnight } from './time/easternTime.js';
 
 const FORECAST_SOURCE_STORAGE_KEY = 'sne-forecast-source';
+const BAS_WEATHER_ICON_BASE = 'https://cdn.jsdelivr.net/gh/basmilius/weather-icons/production/fill/all';
 
 const elements = {
   status: document.getElementById('status'),
@@ -81,19 +82,68 @@ function setRadarLoadState({ loading, error }) {
 }
 
 function weatherLabel(code) {
-  const map = { 0: 'Clear', 1: 'Mostly clear', 2: 'Partly cloudy', 3: 'Cloudy', 45: 'Fog', 51: 'Drizzle', 53: 'Moderate drizzle', 61: 'Rain', 63: 'Moderate rain', 65: 'Heavy rain', 71: 'Snow', 80: 'Rain showers', 95: 'Thunderstorm' };
+  const map = {
+    0: 'Clear',
+    1: 'Mostly clear',
+    2: 'Partly cloudy',
+    3: 'Cloudy',
+    45: 'Fog',
+    48: 'Rime fog',
+    51: 'Light drizzle',
+    53: 'Drizzle',
+    55: 'Heavy drizzle',
+    56: 'Freezing drizzle',
+    57: 'Heavy freezing drizzle',
+    61: 'Light rain',
+    63: 'Rain',
+    65: 'Heavy rain',
+    66: 'Freezing rain',
+    67: 'Heavy freezing rain',
+    71: 'Light snow',
+    73: 'Snow',
+    75: 'Heavy snow',
+    77: 'Snow grains',
+    80: 'Rain showers',
+    81: 'Moderate rain showers',
+    82: 'Heavy rain showers',
+    85: 'Snow showers',
+    86: 'Heavy snow showers',
+    95: 'Thunderstorm',
+    96: 'Thunderstorm with hail',
+    99: 'Severe thunderstorm'
+  };
   return map[code] || 'Mixed conditions';
 }
 
-function weatherIcon(label) {
+function isNightFromEtTimestamp(timestamp) {
+  if (!timestamp) return false;
+  const hour = getEtHourNumber(timestamp);
+  return Number.isFinite(hour) && (hour < 6 || hour >= 18);
+}
+
+function weatherIconName({ label, weatherCode, isDay, timestamp } = {}) {
   const l = String(label || '').toLowerCase();
-  if (l.includes('thunder')) return '⛈️';
-  if (l.includes('snow')) return '❄️';
-  if (l.includes('rain') || l.includes('drizzle') || l.includes('shower')) return '🌧️';
-  if (l.includes('cloud') || l.includes('overcast')) return '☁️';
-  if (l.includes('fog') || l.includes('haze')) return '🌫️';
-  if (l.includes('wind')) return '💨';
-  return '☀️';
+  const code = Number(weatherCode);
+  const isNight = isDay === 0 || isDay === false || isNightFromEtTimestamp(timestamp);
+
+  if ([95, 96, 99].includes(code) || l.includes('thunder')) return isNight ? 'thunderstorms-night-rain' : 'thunderstorms-day-rain';
+  if ([71, 73, 75, 77, 85, 86].includes(code) || l.includes('snow')) return 'snow';
+  if ([51, 53, 55, 56, 57].includes(code) || l.includes('drizzle')) return 'drizzle';
+  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code) || l.includes('rain') || l.includes('shower')) return 'rain';
+  if ([45, 48].includes(code) || l.includes('fog') || l.includes('haze') || l.includes('mist')) return isNight ? 'fog-night' : 'fog-day';
+  if (code === 2 || l.includes('partly cloudy')) return isNight ? 'partly-cloudy-night' : 'partly-cloudy-day';
+  if (code === 3 || l.includes('overcast')) return 'overcast';
+  if (l.includes('cloud')) return 'cloudy';
+  if (l.includes('wind')) return 'wind';
+  if (code === 0 || code === 1 || l.includes('clear') || l.includes('sunny') || l.includes('fair')) return isNight ? 'clear-night' : 'clear-day';
+  return isNight ? 'clear-night' : 'clear-day';
+}
+
+function weatherIconMarkup(data = {}, className = 'weather-icon-svg') {
+  const name = weatherIconName(data);
+  const label = String(data.label || 'Weather');
+  const src = `${BAS_WEATHER_ICON_BASE}/${name}.svg`;
+  return `<img src="${src}" alt="${label}" class="${className}" loading="lazy" decoding="async" />`;
 }
 
 function renderCurrent(data) {
@@ -103,7 +153,13 @@ function renderCurrent(data) {
   elements.windNow.textContent = `${Math.round(current.wind_speed_10m)} mph`;
   const summary = weatherLabel(current.weather_code);
   elements.summaryNow.textContent = summary;
-  if (elements.currentIconLarge) elements.currentIconLarge.textContent = weatherIcon(summary);
+  if (elements.currentIconLarge) {
+    elements.currentIconLarge.innerHTML = weatherIconMarkup({
+      label: summary,
+      weatherCode: current.weather_code,
+      isDay: current.is_day
+    }, 'weather-icon-svg weather-icon-svg--large');
+  }
 }
 
 function etFilterDaily(daily) {
@@ -148,7 +204,7 @@ function renderHourlyFromSource(model) {
     const card = document.createElement('article');
     card.className = 'mini-card mini-card--hourly';
     card.innerHTML = `
-      <div class="weather-icon" aria-hidden="true">${weatherIcon(hour.shortText)}</div>
+      <div class="weather-icon">${weatherIconMarkup({ label: hour.shortText, weatherCode: hour.weatherCode, isDay: hour.isDay, timestamp: hour.timestamp })}</div>
       <div>
         <div class="mini-card__title">${formatEtHourLabel(hour.timestamp)} ET</div>
         <div class="mini-card__value">${hour.temp === null || hour.temp === undefined ? '--' : `${Math.round(hour.temp)}°F`}</div>
@@ -191,7 +247,7 @@ function renderDailyFromSource(model) {
       <details>
         <summary>
           <div class="daily-summary-main">
-            <div class="weather-icon" aria-hidden="true">${weatherIcon(day.shortText)}</div>
+            <div class="weather-icon">${weatherIconMarkup({ label: day.shortText, weatherCode: day.weatherCode, isDay: day.isDay, timestamp: day.timestamp })}</div>
             <div>
               <div class="mini-card__title">${dayName}</div>
               <div class="mini-card__meta">${day.shortText}</div>
