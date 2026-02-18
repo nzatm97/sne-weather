@@ -165,15 +165,6 @@ a:focus-visible {
   min-width: 0;
 }
 
-.quick-tools {
-  display: grid;
-  grid-template-columns: minmax(0, var(--flow-panel-max)) auto;
-  justify-content: center;
-  gap: 0.7rem;
-  align-items: center;
-  margin-bottom: 0.55rem;
-}
-
 .step-heading {
   margin: 0 0 0.34rem;
   font-family: var(--font-heading);
@@ -182,10 +173,6 @@ a:focus-visible {
   line-height: 1.2;
   letter-spacing: -0.01em;
   color: var(--color-text-primary);
-}
-
-.step-heading--location {
-  font-size: clamp(1rem, 1.5vw, 1.25rem);
 }
 
 .step-subtle {
@@ -207,10 +194,6 @@ a:focus-visible {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
-}
-
-.quick-tools .btn {
-  min-height: 42px;
 }
 
 .search-wrap {
@@ -295,30 +278,35 @@ select,
 
 .hero-photo {
   position: relative;
-  min-height: 170px;
+  min-height: 236px;
   margin-bottom: 0.7rem;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
-  gap: 0.52rem;
+  gap: 0.6rem;
   padding: 0.9rem 1rem;
   background:
     linear-gradient(180deg, rgba(4, 8, 18, 0.2), rgba(4, 8, 18, 0.62)),
     url('assets/sne_weather.jpg') center 46%/cover no-repeat;
 }
 
-.hero-source-picker {
-  margin-top: 0;
+.hero-panels {
+  width: min(var(--flow-panel-max), 100%);
+  display: grid;
+  gap: 0.62rem;
+}
+
+.hero-action-panel {
   padding: 0.6rem 0.65rem;
   border-radius: 12px;
   border: 1px solid color-mix(in oklab, var(--color-accent-primary), transparent 56%);
   background: rgba(10, 8, 6, 0.54);
   backdrop-filter: blur(2px);
-  width: min(var(--flow-panel-max), 100%);
+  width: 100%;
 }
 
-.hero-source-picker label {
+.hero-action-panel label {
   display: block;
   margin-bottom: 0.3rem;
   font-family: var(--font-heading);
@@ -329,20 +317,32 @@ select,
   text-align: center;
 }
 
-.hero-source-picker .step-heading {
+.hero-action-panel .step-heading {
   text-align: center;
   margin-bottom: 0.46rem;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
 }
 
-.hero-source-picker #forecastSource {
+.hero-action-panel #forecastSource {
   width: 100%;
 }
 
-.hero-source-picker #forecastSourceStatus {
+.hero-action-panel #forecastSourceStatus {
   margin: 0.38rem 0 0;
   font-size: 0.84rem;
   text-align: center;
+}
+
+.location-controls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.62rem;
+  align-items: center;
+}
+
+.location-controls .btn {
+  min-height: 42px;
+  white-space: nowrap;
 }
 
 .grid-layout {
@@ -988,40 +988,37 @@ select,
     min-height: 40px;
   }
 
-  .quick-tools {
-    grid-template-columns: 1fr;
-    gap: 0.55rem;
-  }
-
   .content-wrap {
     width: 95vw;
   }
 
   .hero-photo {
-    min-height: 136px;
+    min-height: 246px;
     padding: 0.68rem 0.72rem;
     align-items: center;
     gap: 0.42rem;
   }
 
-  .hero-source-picker {
-    margin-top: 0.45rem;
-    width: 100%;
+  .hero-action-panel {
     padding: 0.54rem 0.56rem;
   }
 
-  .step-heading--location {
-    margin-bottom: 0.28rem;
-    font-size: 1.03rem;
-  }
-
-  .hero-source-picker .step-heading {
+  .hero-action-panel .step-heading {
     font-size: 1.12rem;
     margin-bottom: 0.38rem;
   }
 
   .step-subtle {
     font-size: 0.77rem;
+  }
+
+  .location-controls {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .location-controls .btn {
+    width: 100%;
   }
 
   .controls-grid {

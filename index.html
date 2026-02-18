@@ -24,26 +24,30 @@
       </aside>
 
       <div class="content-wrap">
-        <div class="quick-tools">
-          <div class="search-wrap">
-            <p class="step-heading step-heading--location">Choose Your Location</p>
-            <input id="locationSearch" type="search" placeholder="Search city, state (e.g., Boston, MA)" aria-label="Location search" />
-            <ul id="searchResults" class="search-results" aria-label="Location suggestions"></ul>
-          </div>
-          <button id="myLocationBtn" class="btn btn-secondary">My location</button>
-        </div>
-
         <section class="hero-photo card">
-          <div class="hero-source-picker">
-            <h1 class="step-heading">Choose Your Weather Model.</h1>
-            <label for="forecastSource" class="sr-only">Forecast Source</label>
-            <select id="forecastSource" aria-label="Forecast Source">
-              <option value="noaa">National Weather Service (NOAA/NWS)</option>
-              <option value="gfs">American Model (GFS)</option>
-              <option value="ecmwf">European Model (ECMWF)</option>
-            </select>
-            <p id="forecastSourceStatus" class="muted">Selected: National Weather Service (NOAA/NWS)</p>
-            <p class="step-subtle" aria-hidden="true">Scroll to View Forecast ↓</p>
+          <div class="hero-panels">
+            <section class="hero-action-panel hero-action-panel--location">
+              <h1 class="step-heading">Choose Your Location</h1>
+              <div class="location-controls">
+                <div class="search-wrap">
+                  <input id="locationSearch" type="search" placeholder="Search city, state (e.g., Boston, MA)" aria-label="Location search" />
+                  <ul id="searchResults" class="search-results" aria-label="Location suggestions"></ul>
+                </div>
+                <button id="myLocationBtn" class="btn btn-secondary">My location</button>
+              </div>
+            </section>
+
+            <section class="hero-action-panel hero-action-panel--model">
+              <h1 class="step-heading">Choose Your Weather Model.</h1>
+              <label for="forecastSource" class="sr-only">Forecast Source</label>
+              <select id="forecastSource" aria-label="Forecast Source">
+                <option value="noaa">National Weather Service (NOAA/NWS)</option>
+                <option value="gfs">American Model (GFS)</option>
+                <option value="ecmwf">European Model (ECMWF)</option>
+              </select>
+              <p id="forecastSourceStatus" class="muted">Selected: National Weather Service (NOAA/NWS)</p>
+              <p class="step-subtle" aria-hidden="true">Scroll to View Forecast ↓</p>
+            </section>
           </div>
         </section>
 
