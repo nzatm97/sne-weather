@@ -43,9 +43,13 @@
   .nav-link:hover, .nav-link.active { border-color: var(--cyan); background: rgba(108, 226, 255, 0.14); }
 
   .content-wrap { min-width: 0; }
-  .topbar { padding: 1rem 1.1rem; display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; }
-  .eyebrow { color: var(--indigo); font-size: 0.78rem; letter-spacing: 0.11em; margin: 0 0 0.35rem; font-weight: 700; }
-  h1 { background: linear-gradient(90deg, var(--cyan), #b8ddff); -webkit-background-clip: text; color: transparent; }
+  .quick-tools {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.7rem;
+    align-items: center;
+    margin-bottom: 0.45rem;
+  }
 
   .search-wrap { width: min(500px, 100%); position: relative; }
   input, select, .btn {
@@ -59,7 +63,6 @@
   .btn { cursor: pointer; font-weight: 600; }
   .btn:hover { border-color: var(--indigo); }
   .btn-secondary { background: #182543; }
-  .action-row { margin-top: 0.5rem; display: flex; justify-content: flex-end; }
   
   .search-results { position: absolute; top: 44px; z-index: 10; list-style: none; width: 100%; margin: 0; padding: 0.3rem; border: 1px solid #355183; background: #081121; border-radius: 10px; }
   .search-results li { padding: 0.52rem; border-radius: 8px; cursor: pointer; }
@@ -67,6 +70,14 @@
 
   .status { margin: 0.8rem 0 1rem; color: var(--muted); padding-left: 0.2rem; }
   .status.error { color: var(--danger); }
+
+  .hero-photo {
+    min-height: 220px;
+    margin-bottom: 1rem;
+    background:
+      linear-gradient(180deg, rgba(4, 8, 18, 0.12), rgba(4, 8, 18, 0.55)),
+      url("assets/sne_weather.jpg") center/cover no-repeat;
+  }
   
   .grid-layout { display: grid; grid-template-columns: 1.7fr 1fr; gap: 1rem; }
   .map-panel { padding: 1rem; }
@@ -113,7 +124,8 @@
     .grid-layout { grid-template-columns: 1fr; }
   }
   @media (max-width: 760px) {
-    .topbar { flex-direction: column; }
+    .quick-tools { grid-template-columns: 1fr; }
+    .hero-photo { min-height: 170px; }
     .controls-grid { grid-template-columns: 1fr; }
     .current-grid { grid-template-columns: 1fr; }
   }

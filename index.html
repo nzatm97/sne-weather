@@ -24,21 +24,17 @@
       </aside>
 
       <div class="content-wrap">
-        <header class="topbar card">
-          <div>
-            <p class="eyebrow">LIVE REGIONAL INTELLIGENCE</p>
-            <h1>Southern New England Weather</h1>
-          </div>
+        <div class="quick-tools">
           <div class="search-wrap">
             <input id="locationSearch" type="search" placeholder="Search city, state (e.g., Boston, MA)" aria-label="Location search" />
             <ul id="searchResults" class="search-results" aria-label="Location suggestions"></ul>
-            <div class="action-row">
-              <button id="myLocationBtn" class="btn btn-secondary">My location</button>
-            </div>
           </div>
-        </header>
+          <button id="myLocationBtn" class="btn btn-secondary">My location</button>
+        </div>
 
         <p id="status" class="status">Initializing dashboard…</p>
+
+        <section class="hero-photo card"></section>
 
         <main class="grid-layout">
           <section class="map-panel card">
