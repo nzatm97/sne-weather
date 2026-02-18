@@ -31,9 +31,7 @@ const elements = {
   radarTimestamp: document.getElementById('radarTimestamp'),
   radarLoadState: document.getElementById('radarLoadState'),
   meteogramRange: document.getElementById('meteogramRange'),
-  layerRadar: document.getElementById('layerRadar'),
-  layerTemp: document.getElementById('layerTemp'),
-  layerWind: document.getElementById('layerWind')
+  layerRadar: document.getElementById('layerRadar')
 };
 
 if (!elements.status) throw new Error('Home page elements are missing.');
@@ -159,7 +157,6 @@ async function updateLocation(place) {
     renderMeteogram('meteogram', forecast.hourly, Number(elements.meteogramRange.value));
     renderAlerts(alerts);
 
-    weatherMap.updateDerivedLayers(place, forecast);
     weatherMap.updateAlerts(alerts.filter((a) => a.geometry));
     setStatus(`Updated ${place.name}`);
   } catch (error) {
@@ -210,9 +207,6 @@ async function initRadar() {
 }
 
 function setupControls() {
-  weatherMap.toggleTemp(elements.layerTemp.checked);
-  weatherMap.toggleWind(elements.layerWind.checked);
-
   elements.radarPlayBtn.addEventListener('click', async () => {
     if (!radarController) return;
     if (!radarController.playing) radarManager.prefetchAll();
@@ -250,8 +244,6 @@ function setupControls() {
 
   elements.radarOpacity.addEventListener('input', (event) => radarManager?.setOpacity(Number(event.target.value)));
   elements.layerRadar.addEventListener('change', (event) => radarManager?.setVisible(event.target.checked));
-  elements.layerTemp.addEventListener('change', (event) => weatherMap.toggleTemp(event.target.checked));
-  elements.layerWind.addEventListener('change', (event) => weatherMap.toggleWind(event.target.checked));
   elements.alertsToggle.addEventListener('change', (event) => weatherMap.toggleAlerts(event.target.checked));
 
   elements.meteogramRange.addEventListener('change', () => {

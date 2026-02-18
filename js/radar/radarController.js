@@ -12,6 +12,7 @@ export class RadarController {
     this.lastTime = 0;
     this.accumulator = 0;
     this.rafId = null;
+    this.transitionInFlight = false;
   }
 
   setSpeed(multiplier) {
@@ -53,9 +54,14 @@ export class RadarController {
       this.lastTime = now;
       this.accumulator += delta;
 
-      if (this.accumulator >= frameTime) {
+      if (this.accumulator >= frameTime && !this.transitionInFlight) {
         this.accumulator %= frameTime;
-        await this.step(1);
+        this.transitionInFlight = true;
+        try {
+          await this.step(1);
+        } finally {
+          this.transitionInFlight = false;
+        }
       }
 
       this.rafId = requestAnimationFrame(loop);

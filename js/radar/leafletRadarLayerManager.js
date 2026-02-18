@@ -85,7 +85,7 @@ export class LeafletRadarLayerManager {
 
     if (entry.status === 'ready') return true;
 
-    const timeout = new Promise((resolve) => setTimeout(() => resolve(false), 1200));
+    const timeout = new Promise((resolve) => setTimeout(() => resolve(false), 2200));
     const loaded = await Promise.race([entry.readyPromise, timeout]);
     if (!loaded && entry.status !== 'ready') {
       entry.status = 'error';
@@ -94,7 +94,7 @@ export class LeafletRadarLayerManager {
     return true;
   }
 
-  fadeLayers(fromLayer, toLayer, durationMs = 240) {
+  fadeLayers(fromLayer, toLayer, durationMs = 360) {
     const start = performance.now();
 
     const step = (now) => {

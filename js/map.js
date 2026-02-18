@@ -8,15 +8,6 @@ function styleForSeverity(severity = '') {
   return '#70d6ff';
 }
 
-function tempColor(tempF) {
-  if (tempF <= 20) return '#66b5ff';
-  if (tempF <= 35) return '#7ad7ff';
-  if (tempF <= 50) return '#72ffd0';
-  if (tempF <= 65) return '#ffd56e';
-  if (tempF <= 80) return '#ffa46b';
-  return '#ff6e7a';
-}
-
 export class WeatherMap {
   constructor(elementId) {
     this.map = L.map(elementId, { zoomControl: true }).setView(
@@ -29,9 +20,6 @@ export class WeatherMap {
       subdomains: 'abcd',
       maxZoom: 19
     }).addTo(this.map);
-
-    this.tempLayer = L.layerGroup().addTo(this.map);
-    this.windLayer = L.layerGroup().addTo(this.map);
 
     this.alertLayer = L.geoJSON([], {
       style: (feature) => ({ color: styleForSeverity(feature.properties?.severity), weight: 2, fillOpacity: 0.18 })
@@ -48,55 +36,6 @@ export class WeatherMap {
   setCenter(lat, lon, zoom = 8) {
     this.map.setView([lat, lon], zoom, { animate: true });
     this.locationMarker.setLatLng([lat, lon]);
-  }
-
-  updateDerivedLayers(place, forecast) {
-    this.tempLayer.clearLayers();
-    this.windLayer.clearLayers();
-
-    const baseTemp = forecast.current.temperature_2m;
-    const baseWind = forecast.current.wind_speed_10m;
-    const direction = forecast.hourly.wind_direction_10m?.[0] ?? 45;
-
-    const offsets = [-0.45, 0, 0.45];
-    offsets.forEach((latOffset, i) => {
-      offsets.forEach((lonOffset, j) => {
-        const lat = place.lat + latOffset;
-        const lon = place.lon + lonOffset;
-        const temp = baseTemp + (i - 1) * 3 - (j - 1) * 2;
-        const wind = Math.max(2, baseWind + (j - 1) * 2);
-
-        const circle = L.circleMarker([lat, lon], {
-          radius: 6,
-          fillColor: tempColor(temp),
-          color: 'transparent',
-          weight: 0,
-          fillOpacity: 0.28
-        }).bindTooltip(`Temp layer: ${Math.round(temp)}°F`);
-        circle.addTo(this.tempLayer);
-
-        const angle = ((direction + i * 14 + j * 9) * Math.PI) / 180;
-        const lat2 = lat + 0.08 * Math.cos(angle);
-        const lon2 = lon + 0.08 * Math.sin(angle);
-
-        L.polyline(
-          [[lat, lon], [lat2, lon2]],
-          { color: '#9dd6ff', weight: Math.max(1.5, wind / 10), opacity: 0.8 }
-        )
-          .bindTooltip(`Wind layer: ${Math.round(wind)} mph`)
-          .addTo(this.windLayer);
-      });
-    });
-  }
-
-  toggleTemp(visible) {
-    if (visible) this.tempLayer.addTo(this.map);
-    else this.map.removeLayer(this.tempLayer);
-  }
-
-  toggleWind(visible) {
-    if (visible) this.windLayer.addTo(this.map);
-    else this.map.removeLayer(this.windLayer);
   }
 
   updateAlerts(alertFeatures) {
