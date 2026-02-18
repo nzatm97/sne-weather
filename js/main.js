@@ -210,6 +210,9 @@ async function initRadar() {
 }
 
 function setupControls() {
+  weatherMap.toggleTemp(elements.layerTemp.checked);
+  weatherMap.toggleWind(elements.layerWind.checked);
+
   elements.radarPlayBtn.addEventListener('click', async () => {
     if (!radarController) return;
     if (!radarController.playing) radarManager.prefetchAll();

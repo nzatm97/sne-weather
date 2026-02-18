@@ -67,11 +67,11 @@ export class WeatherMap {
         const wind = Math.max(2, baseWind + (j - 1) * 2);
 
         const circle = L.circleMarker([lat, lon], {
-          radius: 11,
+          radius: 6,
           fillColor: tempColor(temp),
-          color: '#0c1225',
-          weight: 1,
-          fillOpacity: 0.52
+          color: 'transparent',
+          weight: 0,
+          fillOpacity: 0.28
         }).bindTooltip(`Temp layer: ${Math.round(temp)}°F`);
         circle.addTo(this.tempLayer);
 
