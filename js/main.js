@@ -63,7 +63,7 @@ function setRadarLoadState({ loading, error }) {
     return;
   }
   elements.radarLoadState.classList.remove('error');
-  elements.radarLoadState.textContent = loading ? 'Loading NOAA frames…' : `NOAA ready (${radarFrameSet.length} frames)`;
+  elements.radarLoadState.textContent = loading ? 'Loading radar frames…' : `Radar ready (${radarFrameSet.length} frames)`;
 }
 
 function weatherLabel(code) {

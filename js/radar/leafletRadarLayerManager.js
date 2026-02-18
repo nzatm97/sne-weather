@@ -42,7 +42,7 @@ export class LeafletRadarLayerManager {
     const layer = L.tileLayer(this.frameUrl(index), {
       opacity: 0,
       zIndex: 450,
-      attribution: 'NOAA',
+      attribution: 'RainViewer',
       updateWhenIdle: false,
       keepBuffer: 4
     });
