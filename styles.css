@@ -65,6 +65,7 @@
   .btn-secondary { background: #182543; }
   
   .search-results { position: absolute; top: 44px; z-index: 10; list-style: none; width: 100%; margin: 0; padding: 0.3rem; border: 1px solid #355183; background: #081121; border-radius: 10px; }
+  .search-results:empty { display: none; }
   .search-results li { padding: 0.52rem; border-radius: 8px; cursor: pointer; }
   .search-results li:hover { background: rgba(136, 164, 255, 0.22); }
 
