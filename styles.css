@@ -1079,11 +1079,13 @@ select,
 
   .sidebar nav {
     gap: 0.38rem;
-    position: static;
-    transform: none;
-    width: calc(100% - 1.2rem);
-    margin: 0.2rem auto 0;
-    padding: 0.08rem 0;
+    position: absolute;
+    left: 50%;
+    bottom: 0.28rem;
+    transform: translateX(-50%);
+    width: calc(100% - 0.9rem);
+    margin: 0;
+    padding: 0.08rem;
   }
 
   .nav-link {
