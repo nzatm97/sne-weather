@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Southern New England Weather</title>
     <meta name="description" content="Southern New England Weather dashboard with radar, alerts, meteogram, and layered map insights." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      document.documentElement.setAttribute('data-theme', localStorage.getItem('uiTheme') || 'midnight-indigo');
+    </script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -20,6 +20,7 @@
           <a class="nav-link" href="about.html">About Us</a>
           <a class="nav-link" href="contact.html">Contact</a>
           <a class="nav-link" href="social.html">Social Media</a>
+          <a class="nav-link" href="style-guide.html">Style Guide</a>
         </nav>
       </aside>
 
@@ -56,13 +57,28 @@
               <div class="radar-controls">
                 <h3>Radar Timeline</h3>
                 <div class="inline-controls">
+                  <button id="radarPrevBtn" class="btn btn-ghost" aria-label="Previous radar frame">Prev</button>
                   <button id="radarPlayBtn" class="btn">Play</button>
+                  <button id="radarNextBtn" class="btn btn-ghost" aria-label="Next radar frame">Next</button>
+                  <button id="radarLatestBtn" class="btn btn-secondary">Latest</button>
+                </div>
+                <div class="inline-controls">
                   <input id="radarFrameRange" type="range" min="0" max="0" value="0" />
                 </div>
                 <div class="inline-controls">
+                  <label for="radarSpeed">Speed</label>
+                  <select id="radarSpeed">
+                    <option value="0.5">0.5x</option>
+                    <option value="1" selected>1x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2">2x</option>
+                  </select>
                   <label for="radarOpacity">Opacity</label>
                   <input id="radarOpacity" type="range" min="0.2" max="1" value="0.72" step="0.05" />
-                  <span id="radarTimestamp" class="muted">--:--</span>
+                  <span id="radarTimestamp" class="muted value-mono">--:--</span>
+                </div>
+                <div class="inline-controls">
+                  <span id="radarLoadState" class="muted">Loading radar…</span>
                 </div>
               </div>
               <div class="legend">

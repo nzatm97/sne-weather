@@ -61,20 +61,6 @@ export async function forecastForLocation(lat, lon) {
   return data;
 }
 
-export async function radarFrames() {
-  const cached = getCached('radar', 'frames', CONFIG.cacheTtlMs.radar);
-  if (cached) return cached;
-
-  const data = await fetchJson(CONFIG.endpoints.radarMeta);
-  const past = data.radar?.past ?? [];
-  const nowcast = data.radar?.nowcast ?? [];
-  const deduped = [...past, ...nowcast].filter((frame, idx, all) => all.findIndex((f) => f.path === frame.path) === idx);
-  const frames = deduped.slice(-CONFIG.map.maxRadarFrames);
-  if (!frames.length) throw new Error('No radar frames available.');
-  setCached('radar', 'frames', frames);
-  return frames;
-}
-
 export async function nwsAlertsByPoint(lat, lon) {
   const key = `${lat.toFixed(2)},${lon.toFixed(2)}`;
   const cached = getCached('alerts', key, CONFIG.cacheTtlMs.alerts);

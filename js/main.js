@@ -1,8 +1,14 @@
 import { CONFIG } from './config.js';
-import { forecastForLocation, nwsAlertsByPoint, radarFrames } from './api.js';
+import { forecastForLocation, nwsAlertsByPoint } from './api.js';
 import { WeatherMap } from './map.js';
 import { renderMeteogram } from './chart.js';
 import { loadRecentSearches, saveRecentSearch, setupSearch } from './search.js';
+import { applySavedPreferences } from './ui-settings.js';
+import { fetchRadarFrames, formatRadarTimestamp } from './radar/frameFetcher.js';
+import { LeafletRadarLayerManager } from './radar/leafletRadarLayerManager.js';
+import { RadarController } from './radar/radarController.js';
+
+applySavedPreferences();
 
 const elements = {
   status: document.getElementById('status'),
@@ -19,27 +25,48 @@ const elements = {
   alertsList: document.getElementById('alertsList'),
   alertsToggle: document.getElementById('alertsToggle'),
   radarPlayBtn: document.getElementById('radarPlayBtn'),
+  radarPrevBtn: document.getElementById('radarPrevBtn'),
+  radarNextBtn: document.getElementById('radarNextBtn'),
+  radarLatestBtn: document.getElementById('radarLatestBtn'),
   radarFrameRange: document.getElementById('radarFrameRange'),
+  radarSpeed: document.getElementById('radarSpeed'),
   radarOpacity: document.getElementById('radarOpacity'),
   radarTimestamp: document.getElementById('radarTimestamp'),
+  radarLoadState: document.getElementById('radarLoadState'),
   meteogramRange: document.getElementById('meteogramRange'),
   layerRadar: document.getElementById('layerRadar'),
   layerTemp: document.getElementById('layerTemp'),
   layerWind: document.getElementById('layerWind')
 };
 
-if (!elements.status) {
-  throw new Error('Home page elements are missing.');
-}
+if (!elements.status) throw new Error('Home page elements are missing.');
 
 const weatherMap = new WeatherMap('map');
 let activeLocation = { ...CONFIG.defaultLocation };
 let latestForecast = null;
 let radarFrameSet = [];
+let radarManager;
+let radarController;
 
 function setStatus(message, isError = false) {
   elements.status.textContent = message;
   elements.status.classList.toggle('error', isError);
+}
+
+function updateRadarTimestamp(index) {
+  const frame = radarFrameSet[index];
+  if (!frame) return;
+  elements.radarTimestamp.textContent = `Radar: ${formatRadarTimestamp(frame.time)}`;
+}
+
+function setRadarLoadState({ loading, error }) {
+  if (error) {
+    elements.radarLoadState.textContent = error;
+    elements.radarLoadState.classList.add('error');
+    return;
+  }
+  elements.radarLoadState.classList.remove('error');
+  elements.radarLoadState.textContent = loading ? 'Loading frames…' : `Ready (${radarFrameSet.length} frames)`;
 }
 
 function weatherLabel(code) {
@@ -128,16 +155,15 @@ async function updateLocation(place) {
   setStatus('Loading forecast, radar, and alerts…');
   try {
     const [forecast, alerts] = await Promise.all([forecastForLocation(place.lat, place.lon), nwsAlertsByPoint(place.lat, place.lon)]);
-
     latestForecast = forecast;
+
     renderCurrent(forecast);
     renderDaily(forecast);
     renderMeteogram('meteogram', forecast.hourly, Number(elements.meteogramRange.value));
     renderAlerts(alerts);
 
     weatherMap.updateDerivedLayers(place, forecast);
-    const geoAlerts = alerts.filter((a) => a.geometry);
-    weatherMap.updateAlerts(geoAlerts);
+    weatherMap.updateAlerts(alerts.filter((a) => a.geometry));
     setStatus(`Updated ${place.name}`);
   } catch (error) {
     setStatus(`Unable to load all weather data: ${error.message}`, true);
@@ -146,43 +172,87 @@ async function updateLocation(place) {
 
 async function initRadar() {
   try {
-    radarFrameSet = await radarFrames();
-    weatherMap.setRadarFrames(radarFrameSet);
+    radarFrameSet = await fetchRadarFrames();
     elements.radarFrameRange.max = String(radarFrameSet.length - 1);
     elements.radarFrameRange.value = String(radarFrameSet.length - 1);
-    elements.radarTimestamp.textContent = new Date(radarFrameSet.at(-1).time * 1000).toLocaleTimeString();
+    updateRadarTimestamp(radarFrameSet.length - 1);
 
-    elements.radarFrameRange.addEventListener('input', (event) => {
-      const idx = weatherMap.setFrameByIndex(Number(event.target.value));
-      elements.radarTimestamp.textContent = new Date(radarFrameSet[idx].time * 1000).toLocaleTimeString();
+    radarManager = new LeafletRadarLayerManager(weatherMap.map, {
+      opacity: Number(elements.radarOpacity.value),
+      maxCachedFrames: CONFIG.map.radarCacheSize,
+      prefetchAhead: CONFIG.map.radarPrefetchAhead,
+      onStateChange: setRadarLoadState
     });
+
+    radarManager.setFrames(radarFrameSet);
+    await radarManager.setFrame(radarFrameSet.length - 1, { animate: false });
+
+    radarController = new RadarController({
+      getFrameCount: () => radarFrameSet.length,
+      onFrame: async (idx, options) => radarManager.setFrame(idx, options),
+      onTick: (idx) => {
+        elements.radarFrameRange.value = String(idx);
+        updateRadarTimestamp(idx);
+      },
+      onState: ({ playing }) => {
+        if (typeof playing === 'boolean') {
+          elements.radarPlayBtn.textContent = playing ? 'Pause' : 'Play';
+        }
+      }
+    });
+
+    radarController.baseFps = CONFIG.map.radarFps;
+    radarController.setSpeed(Number(elements.radarSpeed.value));
+    setRadarLoadState({ loading: false, error: null });
+    radarManager.prefetchFrom(radarFrameSet.length - 1, CONFIG.map.radarPrefetchAhead);
+    console.info('[radar] Controller initialized', { count: radarFrameSet.length });
   } catch (error) {
+    setRadarLoadState({ loading: false, error: error.message });
     setStatus(`Radar unavailable: ${error.message}`, true);
   }
 }
 
 function setupControls() {
-  let playing = false;
-  elements.radarPlayBtn.addEventListener('click', () => {
-    if (playing) {
-      weatherMap.pauseRadar();
-      elements.radarPlayBtn.textContent = 'Play';
-      playing = false;
-      return;
-    }
-    weatherMap.playRadar((idx) => {
-      elements.radarFrameRange.value = String(idx);
-      if (radarFrameSet[idx]) elements.radarTimestamp.textContent = new Date(radarFrameSet[idx].time * 1000).toLocaleTimeString();
-    });
-    elements.radarPlayBtn.textContent = 'Pause';
-    playing = true;
+  elements.radarPlayBtn.addEventListener('click', async () => {
+    if (!radarController) return;
+    if (!radarController.playing) radarManager.prefetchAll();
+    radarController.toggle();
   });
 
-  elements.radarOpacity.addEventListener('input', (event) => weatherMap.setRadarOpacity(Number(event.target.value)));
-  elements.alertsToggle.addEventListener('change', (event) => weatherMap.toggleAlerts(event.target.checked));
-  elements.layerRadar.addEventListener('change', (event) => weatherMap.toggleRadar(event.target.checked));
+  elements.radarPrevBtn.addEventListener('click', async () => {
+    if (!radarController) return;
+    radarController.pause();
+    await radarController.step(-1);
+  });
+
+  elements.radarNextBtn.addEventListener('click', async () => {
+    if (!radarController) return;
+    radarController.pause();
+    await radarController.step(1);
+  });
+
+  elements.radarLatestBtn.addEventListener('click', async () => {
+    if (!radarController) return;
+    radarController.pause();
+    await radarController.latest();
+  });
+
+  elements.radarFrameRange.addEventListener('input', async (event) => {
+    if (!radarController) return;
+    radarController.pause();
+    await radarController.setIndex(Number(event.target.value), false);
+  });
+
+  elements.radarSpeed.addEventListener('change', (event) => {
+    if (!radarController) return;
+    radarController.setSpeed(Number(event.target.value));
+  });
+
+  elements.radarOpacity.addEventListener('input', (event) => radarManager?.setOpacity(Number(event.target.value)));
+  elements.layerRadar.addEventListener('change', (event) => radarManager?.setVisible(event.target.checked));
   elements.layerTemp.addEventListener('change', (event) => weatherMap.toggleTemp(event.target.checked));
   elements.layerWind.addEventListener('change', (event) => weatherMap.toggleWind(event.target.checked));
+  elements.alertsToggle.addEventListener('change', (event) => weatherMap.toggleAlerts(event.target.checked));
 
   elements.meteogramRange.addEventListener('change', () => {
     if (!latestForecast) return;
@@ -205,7 +275,12 @@ function setupControls() {
 
 async function init() {
   setupControls();
-  setupSearch({ input: elements.searchInput, resultsList: elements.searchResults, onSelect: updateLocation, onError: (error) => setStatus(`Search error: ${error.message}`, true) });
+  setupSearch({
+    input: elements.searchInput,
+    resultsList: elements.searchResults,
+    onSelect: updateLocation,
+    onError: (error) => setStatus(`Search error: ${error.message}`, true)
+  });
 
   renderRecents();
   await initRadar();

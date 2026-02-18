@@ -2,8 +2,11 @@ export const CONFIG = {
     defaultLocation: { name: 'Providence, RI', lat: 41.824, lon: -71.4128 },
     map: {
       initialZoom: 7,
-      maxRadarFrames: 12,
+      maxRadarFrames: 40,
       radarOpacity: 0.72,
+      radarFps: 10,
+      radarPrefetchAhead: 5,
+      radarCacheSize: 18,
       darkTiles: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
       attribution:
         '&copy; OpenStreetMap contributors &copy; CARTO &copy; RainViewer &copy; NWS'
